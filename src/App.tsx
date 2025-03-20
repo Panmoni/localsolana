@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import viteLogo from '/vite.svg';
 import reactLogo from './assets/react.svg';
-import Header from './Header'; // New Header component
+import Header from './Header';
+import CreateAccountForm from './CreateAccountForm';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -26,6 +27,7 @@ function App() {
           <p>Edit <code>src/App.tsx</code> and save to test HMR</p>
         </div>
         <p className="read-the-docs">Click logos to learn more</p>
+        <CreateAccountForm />
       </div>
     </>
   );
