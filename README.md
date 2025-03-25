@@ -58,3 +58,4 @@ export default tseslint.config({
 - https://github.com/Panmoni/localsolana-contracts
 - https://github.com/Panmoni/localsolana-api
 - https://github.com/Panmoni/localsolana-www
+- https://github.com/Panmoni/localsolana-listener
