@@ -8,14 +8,8 @@ export default defineConfig({
     react(),
     nodePolyfills({
       globals: {
-        process: true
+        process: true, // Polyfills process for Dynamic/@solana
       }
-    })
+    }),
   ],
-  define: {
-    'process.env': {},
-    'process': {
-      'env': {}
-    }
-  }
 })
