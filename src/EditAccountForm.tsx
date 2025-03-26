@@ -116,7 +116,9 @@ function EditAccountForm({ account, onSaveSuccess, onCancel }: EditAccountFormPr
         timezone: formData.timezone || null,
       };
 
+      console.log('PUT data being sent:', updateData);
       const response = await updateAccount(account.id, updateData);
+      console.log('PUT response:', response);
 
       // Combine updated data with existing account data
       const updatedAccount: Account = {
