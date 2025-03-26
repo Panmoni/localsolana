@@ -29,7 +29,8 @@ function Header({ isLoggedIn, account }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-10 bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-        <Link to="/" className="text-2xl text-purple-700">
+        <Link to="/" className="text-2xl text-purple-700 flex items-center gap-2">
+          <img src="/logo.png" alt="LocalSolana Logo" className="h-8 w-auto" />
           <h1 className="font-black">LocalSolana</h1>
         </Link>
         {/* <nav className="flex gap-6">
