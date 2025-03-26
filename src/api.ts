@@ -7,6 +7,30 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Log requests
+api.interceptors.request.use(
+  (config) => {
+    console.log("API Request:", config.method, config.url);
+    return config;
+  },
+  (error) => {
+    console.error("Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Log responses
+api.interceptors.response.use(
+  (response) => {
+    console.log("API Response:", response.status, response.data);
+    return response;
+  },
+  (error) => {
+    console.error("API Error:", error.response?.status, error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const setAuthToken = (token: string) => {
   api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
@@ -31,6 +55,7 @@ export interface Offer {
   terms?: string;
   escrow_deposit_time_limit?: string;
   fiat_payment_time_limit?: string;
+  updated_at: string;
 }
 
 export interface Trade {
