@@ -30,14 +30,14 @@ function Header({ isLoggedIn }: HeaderProps) {
         <Link to="/" className="text-2xl font-bold text-purple-700">
           LocalSolana
         </Link>
-        <nav className="flex gap-6">
+        {/* <nav className="flex gap-6">
           <Link to="/" className="text-purple-700 hover:text-purple-800 font-medium transition">
             Home
           </Link>
           <Link to="/offers" className="text-purple-700 hover:text-purple-800 font-medium transition">
             Offers
           </Link>
-        </nav>
+        </nav> */}
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <>
