@@ -236,7 +236,7 @@ function EditAccountForm({ account, onSaveSuccess, onCancel }: EditAccountFormPr
           <SelectTrigger className="border-neutral-300 focus:ring-[#8b5cf6]">
             <SelectValue placeholder="Select country code" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white shadow-md">
             {countryCodes.map((code) => (
               <SelectItem key={code.value} value={code.value}>
                 {code.label}
@@ -272,7 +272,7 @@ function EditAccountForm({ account, onSaveSuccess, onCancel }: EditAccountFormPr
           <SelectTrigger className="border-neutral-300 focus:ring-[#8b5cf6]">
             <SelectValue placeholder="Select your timezone" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white shadow-md">
             {timezones.map((timezone) => (
               <SelectItem key={timezone} value={timezone}>
                 {timezone}
