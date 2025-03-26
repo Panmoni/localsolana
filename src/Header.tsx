@@ -11,6 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+
 
 interface HeaderProps {
   isLoggedIn: boolean;
@@ -32,6 +34,12 @@ function Header({ isLoggedIn, account }: HeaderProps) {
         <Link to="/" className="text-2xl text-purple-700 flex items-center gap-2">
           <img src="/logo.png" alt="LocalSolana Logo" className="h-8 w-auto" />
           <h1 className="font-black">LocalSolana</h1>
+          <Badge
+            variant="secondary"
+            className="bg-purple-100 text-purple-700 text-[10px] uppercase font-semibold"
+          >
+            Devnet
+          </Badge>
         </Link>
         {/* <nav className="flex gap-6">
           <Link to="/" className="text-purple-700 hover:text-purple-800 font-medium transition">
