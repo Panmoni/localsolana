@@ -35,12 +35,22 @@ export const setAuthToken = (token: string) => {
   api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
 
-// Define types based on your API schema
+// Define types based on API schema
 export interface Account {
-  id: string;
+  id: number;
   wallet_address: string;
   username: string;
   email: string;
+  telegram_username: string | null;
+  telegram_id: string | null;
+  profile_photo_url: string | null;
+  phone_country_code: string | null;
+  phone_number: string | null;
+  available_from: string | null;
+  available_to: string | null;
+  timezone: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Offer {
@@ -93,21 +103,32 @@ export interface Escrow {
   sequential: boolean;
 }
 
+export interface ApiResponse<T> {
+  data: {
+    data: T;
+  };
+}
+
 // Accounts
 export const createAccount = (data: Partial<Account>) => api.post<{ data: { id: string } }>("/accounts", data);
-export const getAccountById = (id: string) => api.get<{ data: Account }>(`/accounts/${id}`);
+
+export const getAccountById = (id: string) => api.get<Account>(`/accounts/${id}`);
+
 export const updateAccount = (id: string, data: Partial<Account>) => api.put<{ data: { id: string } }>(`/accounts/${id}`, data);
 export const getAccount = () => api.get<{ data: Account }>("/accounts/me");
 
 // Offers
 export const createOffer = (data: Partial<Offer>) => api.post<{ data: { id: string } }>("/offers", data);
-export const getOffers = (params?: { type?: string; token?: string }) => api.get<{ data: Offer[] }>("/offers", { params });
+
+export const getOffers = (params?: { type?: string; token?: string }) => api.get<Offer[]>("/offers", { params });
+
 export const getOfferById = (id: string) => api.get<{ data: Offer }>(`/offers/${id}`);
 export const updateOffer = (id: string, data: Partial<Offer>) => api.put<{ data: { id: string } }>(`/offers/${id}`, data);
 export const deleteOffer = (id: string) => api.delete<{ data: { message: string } }>(`/offers/${id}`);
 
 // Trades
-export const createTrade = (data: Partial<Trade>) => api.post<{ data: { id: string } }>("/trades", data);
+export const createTrade = (data: Partial<Trade>) => api.post<Trade>("/trades", data);
+
 export const getTrades = (params?: { status?: string; user?: string }) => api.get<{ data: Trade[] }>("/trades", { params });
 export const getMyTrades = () => api.get<{ data: Trade[] }>("/my/trades");
 export const getTradeById = (id: string) => api.get<{ data: Trade }>(`/trades/${id}`);
