@@ -22,7 +22,6 @@ export const Footer: React.FC = () => {
             <a target="_blank"  href="https://localsolana.com/about/">About</a>
             <a target="_blank" href="https://LocalSolana.com/blog">Blog</a>
             <a target="_blank" href="https://localsolana.com/roadmap/">Roadmap</a>
-            <a target="_blank"  href="https://getwaitlist.com/waitlist/19781">Get on the Waitlist</a>
           </nav>
         </div>
 
@@ -40,6 +39,11 @@ export const Footer: React.FC = () => {
           <p>
             <a className="!font-normal" href="mailto:hello@panmoni.com">hello@panmoni.com</a>
           </p>
+
+          <p>
+            <a target="_blank"  href="https://getwaitlist.com/waitlist/19781">Get on the Waitlist</a>
+          </p>
+
           <div className="social-links">
             <a
               href="https://x.com/localsolana"
