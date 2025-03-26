@@ -1,35 +1,68 @@
-import { useState } from 'react';
-import viteLogo from '/vite.svg';
-import reactLogo from './assets/react.svg';
-import Header from './Header';
-import CreateAccountForm from './CreateAccountForm';
+import { useState, useEffect } from "react";
+import { useDynamicContext, getAuthToken } from "@dynamic-labs/sdk-react-core";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./Header";
+import OffersPage from "./OffersPage";
+import CreateOfferPage from "./CreateOfferPage";
+import AccountPage from "./AccountPage";
+import { getAccount, setAuthToken } from "./api";
+import { Account } from "./api";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { primaryWallet } = useDynamicContext();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    if (primaryWallet) {
+      const token = getAuthToken();
+      if (token) {
+        console.log("JWT Token:", token); // Log the token here
+        setAuthToken(token);
+      } else {
+        console.error("No JWT token found after wallet connect!");
+      }
+      const getUserData = async () => {
+        try {
+          const response = await getAccount();
+          setAccount(response.data);
+        } catch (err) {
+          console.error("Failed to fetch account:", err);
+        }
+      };
+      getUserData();
+    }
+  }, [primaryWallet]);
 
   return (
-    <>
-      <Header />
-      <div className="main-content">
-        <div>
-          <a href="https://vite.dev" target="_blank">
-            <img src={viteLogo} className="logo" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank">
-            <img src={reactLogo} className="logo react" alt="React logo" />
-          </a>
+    <Router>
+      <Header isLoggedIn={!!primaryWallet} />
+      <main className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center pt-20">
+        <div className="w-full max-w-6xl px-4 py-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h1 className="text-3xl font-bold text-purple-700 mb-6 text-center">LocalSolana</h1>
+                  {account && (
+                    <p className="text-gray-800">
+                      Welcome, <span className="font-medium text-green-600">{account.username}</span>! View your{" "}
+                      <a href="/account" className="text-purple-700 hover:text-purple-800">account details</a>.
+                    </p>
+                  )}
+                </div>
+              }
+            />
+            <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
+            <Route path="/offers" element={<OffersPage />} />
+            <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
+            <Route path="/my-offers" element={<div>My Offers Page (TBD)</div>} />
+            <Route path="/trades" element={<div>Trades Page (TBD)</div>} />
+            <Route path="/escrows" element={<div>Escrows Page (TBD)</div>} />
+          </Routes>
         </div>
-        <h1>Vite + React + Solana Devnet</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-          <p>Edit <code>src/App.tsx</code> and save to test HMR</p>
-        </div>
-        <p className="read-the-docs">Click logos to learn more</p>
-        <CreateAccountForm />
-      </div>
-    </>
+      </main>
+    </Router>
   );
 }
 

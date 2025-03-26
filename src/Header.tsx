@@ -1,29 +1,86 @@
-import { useEffect } from 'react';
-import { useDynamicContext, DynamicWidget, getAuthToken } from '@dynamic-labs/sdk-react-core';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useDynamicContext, DynamicWidget, getAuthToken } from "@dynamic-labs/sdk-react-core";
+import { setAuthToken } from "./api";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-function Header() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+interface HeaderProps {
+  isLoggedIn: boolean;
+}
+
+function Header({ isLoggedIn }: HeaderProps) {
+  const { setShowAuthFlow } = useDynamicContext();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const token = getAuthToken();
-    console.log('JWT from getAuthToken:', token); // Keep dumping JWT to console
-  }, [primaryWallet]); // Update on wallet change
-
-  const handleConnectWallet = () => {
-    setShowAuthFlow(true); // Trigger auth flow when button clicked
-  };
+    if (token) setAuthToken(token);
+  }, []);
 
   return (
-    <header className="app-header">
-      <div className="header-left">
-        <h1>LocalSolana</h1>
-      </div>
-      <div className="header-right">
-        {primaryWallet?.isConnected ? (
-          <DynamicWidget />
-        ) : (
-          <button onClick={handleConnectWallet}>Connect Wallet</button>
-        )}
+    <header className="fixed top-0 left-0 right-0 z-10 bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+        <Link to="/" className="text-2xl font-bold text-purple-700">
+          LocalSolana
+        </Link>
+        <nav className="flex gap-6">
+          <Link to="/" className="text-purple-700 hover:text-purple-800 font-medium transition">
+            Home
+          </Link>
+          <Link to="/offers" className="text-purple-700 hover:text-purple-800 font-medium transition">
+            Offers
+          </Link>
+        </nav>
+        <div className="flex items-center gap-4">
+          {isLoggedIn ? (
+            <>
+              <DynamicWidget />
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                <DropdownMenuTrigger className="focus:outline-none">
+                  <Avatar className="cursor-pointer hover:ring-2 hover:ring-purple-700 transition">
+                    <AvatarFallback>U</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/account" className="w-full text-gray-800 hover:text-purple-700">
+                      My Account
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/my-offers" className="w-full text-gray-800 hover:text-purple-700">
+                      My Offers
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/trades" className="w-full text-gray-800 hover:text-purple-700">
+                      My Trades
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/escrows" className="w-full text-gray-800 hover:text-purple-700">
+                      My Escrows
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Button
+              onClick={() => setShowAuthFlow(true)}
+              className="bg-purple-700 hover:bg-purple-800"
+            >
+              Connect Wallet
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );
