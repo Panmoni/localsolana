@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useDynamicContext, DynamicWidget, getAuthToken } from "@dynamic-labs/sdk-react-core";
 import { setAuthToken } from "./api";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,10 +45,11 @@ function Header({ isLoggedIn }: HeaderProps) {
               <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger className="focus:outline-none">
                   <Avatar className="cursor-pointer hover:ring-2 hover:ring-purple-700 transition">
+                    <AvatarImage src="/icon96.png" />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-48 bg-white shadow-md">
                   <DropdownMenuItem asChild>
                     <Link to="/account" className="w-full text-gray-800 hover:text-purple-700">
                       My Account
