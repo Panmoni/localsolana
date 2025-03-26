@@ -3,6 +3,7 @@
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
+@import "@fontsource/inter/900.css";
 
 /* Base styles */
 html {
@@ -60,7 +61,6 @@ a:hover {
   margin: 0;
   font-size: 1.5rem;
   line-height: 2rem;
-  font-weight: 700;
   color: #5b21b6;
 }
 

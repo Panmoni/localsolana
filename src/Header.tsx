@@ -27,8 +27,8 @@ function Header({ isLoggedIn }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-10 bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-        <Link to="/" className="text-2xl font-bold text-purple-700">
-          LocalSolana
+        <Link to="/" className="text-2xl text-purple-700">
+          <h1 className="font-black">LocalSolana</h1>
         </Link>
         {/* <nav className="flex gap-6">
           <Link to="/" className="text-purple-700 hover:text-purple-800 font-medium transition">
@@ -76,7 +76,7 @@ function Header({ isLoggedIn }: HeaderProps) {
           ) : (
             <Button
               onClick={() => setShowAuthFlow(true)}
-              className="bg-purple-700 hover:bg-purple-800"
+              className="bg-purple-700 hover:bg-purple-800 text-white"
             >
               Connect Wallet
             </Button>
