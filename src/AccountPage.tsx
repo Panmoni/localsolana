@@ -1,8 +1,11 @@
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core"; // Add this import
+import { useState } from "react";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Account } from "./api";
 import CreateAccountForm from "./CreateAccountForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import EditAccountForm from "./EditAccountForm";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface AccountPageProps {
   account: Account | null;
@@ -10,40 +13,146 @@ interface AccountPageProps {
 }
 
 function AccountPage({ account, setAccount }: AccountPageProps) {
-  const { primaryWallet } = useDynamicContext(); // Now defined
+  const { primaryWallet } = useDynamicContext();
+  const [isEditing, setIsEditing] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState("");
 
   if (!primaryWallet) {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-purple-700">Account</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <AlertDescription>Please log in to view or create your account.</AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-2xl mx-auto">
+        <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+          <CardHeader className="border-b border-neutral-100">
+            <CardTitle className="text-[#5b21b6] font-semibold">Account Profile</CardTitle>
+            <CardDescription>View and manage your account settings</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <Alert className="bg-neutral-50 border-neutral-200">
+              <AlertDescription>Please connect your wallet to view or create your account.</AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
+  const handleSaveSuccess = (updatedAccount: Account) => {
+    setAccount(updatedAccount);
+    setIsEditing(false);
+    setUpdateSuccess("Your profile has been updated successfully");
+
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      setUpdateSuccess("");
+    }, 3000);
+  };
+
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="text-purple-700">Account</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {account ? (
-          <div className="space-y-2 text-gray-800">
-            <p><span className="font-medium text-green-600">Wallet:</span> {account.wallet_address}</p>
-            <p><span className="font-medium text-green-600">Username:</span> {account.username}</p>
-            <p><span className="font-medium text-green-600">Email:</span> {account.email}</p>
+    <div className="w-full max-w-2xl mx-auto">
+      <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+        <CardHeader className="border-b border-neutral-100">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-[#5b21b6] font-semibold">Account Profile</CardTitle>
+              <CardDescription>View and manage your account settings</CardDescription>
+            </div>
+
+            {account && !isEditing && (
+              <Button
+                onClick={() => setIsEditing(true)}
+                className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white"
+              >
+                Edit Profile
+              </Button>
+            )}
           </div>
-        ) : (
-          <CreateAccountForm setAccount={setAccount} />
-        )}
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent className="p-6">
+          {updateSuccess && (
+            <Alert className="mb-6 bg-[#d1fae5] border-[#a7f3d0]">
+              <AlertDescription className="text-[#065f46]">{updateSuccess}</AlertDescription>
+            </Alert>
+          )}
+
+          {account ? (
+            isEditing ? (
+              <EditAccountForm
+                account={account}
+                onSaveSuccess={handleSaveSuccess}
+                onCancel={() => setIsEditing(false)}
+              />
+            ) : (
+              <ProfileDisplay account={account} />
+            )
+          ) : (
+            <CreateAccountForm setAccount={setAccount} />
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Component for displaying user profile information in a vertical layout
+function ProfileDisplay({ account }: { account: Account }) {
+  return (
+    <div className="space-y-5">
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Wallet Address</h3>
+        <p className="text-neutral-700 font-mono text-sm break-all">{account.wallet_address}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Username</h3>
+        <p className="text-neutral-700">{account.username || '-'}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Email</h3>
+        <p className="text-neutral-700">{account.email || '-'}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Telegram Username</h3>
+        <p className="text-neutral-700">{account.telegram_username || '-'}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Telegram ID</h3>
+        <p className="text-neutral-700">{account.telegram_id || '-'}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Phone</h3>
+        <p className="text-neutral-700">
+          {account.phone_country_code && account.phone_number
+            ? `${account.phone_country_code} ${account.phone_number}`
+            : '-'
+          }
+        </p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Timezone</h3>
+        <p className="text-neutral-700">{account.timezone || '-'}</p>
+      </div>
+
+      <div className="border-b border-neutral-100 pb-4">
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Available Hours</h3>
+        <p className="text-neutral-700">
+          {account.available_from && account.available_to
+            ? `${account.available_from} - ${account.available_to}`
+            : '-'
+          }
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-neutral-500 mb-1">Member Since</h3>
+        <p className="text-neutral-700">
+          {new Date(account.created_at).toLocaleDateString()}
+        </p>
+      </div>
+    </div>
   );
 }
 
