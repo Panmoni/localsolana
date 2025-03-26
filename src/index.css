@@ -2,10 +2,6 @@
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/700.css";
-@import "tw-animate-css";
-@import "tailwindcss/typography";
-
-@custom-variant dark (&:is(.dark *));
 
 @layer base {
   html {
