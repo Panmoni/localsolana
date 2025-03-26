@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { createOffer } from "./api";
-import { Account } from "./api"; // Removed unused Offer import
+import { Account, Offer } from "./api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,218 +33,305 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
     fiat_payment_time_limit: "30 minutes",
   });
   const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = {
-      ...formData,
-      min_amount: Number(formData.min_amount),
-      max_amount: Number(formData.max_amount),
-      total_available_amount: Number(formData.total_available_amount),
-      rate_adjustment: Number(formData.rate_adjustment),
-    };
-    if (!primaryWallet) {
-      alert("Please log in to create an offer");
+    setError("");
+    setSuccess("");
+
+    // Ensure account ID is a number
+    let accountId: number;
+    if (typeof account?.id === 'string') {
+      accountId = parseInt(account.id, 10);
+    } else {
+      accountId = account?.id as number;
+    }
+
+    // Basic validation
+    if (!accountId) {
+      setError("Account ID is required");
       return;
     }
-    if (data.min_amount <= 0) {
-      alert("Min amount must be greater than 0");
+
+    const minAmount = Number(formData.min_amount);
+    const maxAmount = Number(formData.max_amount);
+    const totalAmount = Number(formData.total_available_amount);
+
+    if (minAmount <= 0) {
+      setError("Minimum amount must be greater than 0");
       return;
     }
-    const response = await createOffer(data); // Use response instead of destructuring
-    setSuccess(`Offer created with ID: ${response.data.id}`); // Access id from response.data
-    setFormData({
-      creator_account_id: account?.id || "",
-      offer_type: "BUY",
-      token: "USDC",
-      min_amount: "",
-      max_amount: "",
-      total_available_amount: "",
-      rate_adjustment: "1.05",
-      terms: "Cash only",
-      escrow_deposit_time_limit: "15 minutes",
-      fiat_payment_time_limit: "30 minutes",
-    });
+
+    if (maxAmount < minAmount) {
+      setError("Maximum amount must be greater than or equal to minimum amount");
+      return;
+    }
+
+    if (totalAmount < maxAmount) {
+      setError("Total available amount must be at least as large as maximum amount");
+      return;
+    }
+
+    try {
+      // Fix: Convert values to strings to match the Offer interface
+      const data: Partial<Offer> = {
+        creator_account_id: accountId,
+        offer_type: formData.offer_type,
+        token: formData.token,
+        min_amount: String(minAmount),             // Convert to string
+        max_amount: String(maxAmount),             // Convert to string
+        total_available_amount: String(totalAmount), // Convert to string
+        rate_adjustment: formData.rate_adjustment,  // Already string
+        terms: formData.terms,
+        escrow_deposit_time_limit: { minutes: 15 }, // Use object structure
+        fiat_payment_time_limit: { minutes: 30 }    // Use object structure
+      };
+
+      const response = await createOffer(data);
+      setSuccess(`Offer created successfully with ID: ${response.data.id}`);
+
+      // Reset form
+      setFormData({
+        creator_account_id: account?.id || "",
+        offer_type: "BUY",
+        token: "USDC",
+        min_amount: "",
+        max_amount: "",
+        total_available_amount: "",
+        rate_adjustment: "1.05",
+        terms: "Cash only",
+        escrow_deposit_time_limit: "15 minutes",
+        fiat_payment_time_limit: "30 minutes",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create offer");
+      console.error("Create offer error:", err);
+    }
   };
 
   if (!primaryWallet) {
     return (
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="text-purple-700">Create an Offer</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <AlertDescription>Please log in to create an offer.</AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-2xl mx-auto">
+        <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+          <CardHeader className="border-b border-neutral-100">
+            <CardTitle className="text-[#5b21b6] font-semibold">Create an Offer</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <Alert className="bg-neutral-50 border-neutral-200">
+              <AlertDescription>Please connect your wallet to create an offer.</AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="text-purple-700">Create an Offer</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="w-full max-w-2xl mx-auto">
+      <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+        <CardHeader className="border-b border-neutral-100">
+          <CardTitle className="text-[#5b21b6] font-semibold">Create an Offer</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
           {success && (
-            <Alert>
-              <AlertDescription>{success}</AlertDescription>
+            <Alert className="mb-6 bg-[#d1fae5] border-[#a7f3d0]">
+              <AlertDescription className="text-[#065f46]">{success}</AlertDescription>
             </Alert>
           )}
-          <div>
-            <label
-              htmlFor="creator_account_id"
-              className="block text-sm font-medium text-gray-700 mb-1"
+
+          {error && (
+            <Alert className="mb-6 bg-red-50 border-red-200" variant="destructive">
+              <AlertDescription className="text-red-700">{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1">
+              <label
+                htmlFor="creator_account_id"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Your Account ID
+              </label>
+              <Input
+                id="creator_account_id"
+                type="text"
+                value={formData.creator_account_id}
+                className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                onChange={(e) => setFormData({ ...formData, creator_account_id: e.target.value })}
+                disabled
+              />
+              <p className="text-xs text-neutral-500">This is your account identifier</p>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="offer_type"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Offer Type
+              </label>
+              <Select
+                value={formData.offer_type}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, offer_type: value as "BUY" | "SELL" })
+                }
+              >
+                <SelectTrigger className="border-neutral-300 focus:ring-[#8b5cf6]">
+                  <SelectValue placeholder="Select offer type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BUY">Buy USDC</SelectItem>
+                  <SelectItem value="SELL">Sell USDC</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-neutral-500">
+                {formData.offer_type === "BUY"
+                  ? "You want to buy USDC with fiat currency"
+                  : "You want to sell USDC for fiat currency"}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label
+                  htmlFor="min_amount"
+                  className="block text-sm font-medium text-neutral-700"
+                >
+                  Minimum Amount (USDC)
+                </label>
+                <Input
+                  id="min_amount"
+                  type="number"
+                  placeholder="10"
+                  className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                  value={formData.min_amount}
+                  onChange={(e) => setFormData({ ...formData, min_amount: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label
+                  htmlFor="max_amount"
+                  className="block text-sm font-medium text-neutral-700"
+                >
+                  Maximum Amount (USDC)
+                </label>
+                <Input
+                  id="max_amount"
+                  type="number"
+                  placeholder="100"
+                  className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                  value={formData.max_amount}
+                  onChange={(e) => setFormData({ ...formData, max_amount: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="total_available_amount"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Total Available Amount (USDC)
+              </label>
+              <Input
+                id="total_available_amount"
+                type="number"
+                placeholder="1000"
+                className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                value={formData.total_available_amount}
+                onChange={(e) => setFormData({ ...formData, total_available_amount: e.target.value })}
+              />
+              <p className="text-xs text-neutral-500">
+                Total amount of USDC available for all trades from this offer
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="rate_adjustment"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Rate Adjustment
+              </label>
+              <Input
+                id="rate_adjustment"
+                type="number"
+                step="0.01"
+                className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                value={formData.rate_adjustment}
+                onChange={(e) => setFormData({ ...formData, rate_adjustment: e.target.value })}
+              />
+              <p className="text-xs text-neutral-500">
+                1.05 = +5% above market rate, 0.95 = -5% below market rate
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="terms"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Terms
+              </label>
+              <Input
+                id="terms"
+                type="text"
+                className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                value={formData.terms}
+                onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
+              />
+              <p className="text-xs text-neutral-500">
+                Additional terms or payment methods you accept
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label
+                  htmlFor="escrow_deposit_time_limit"
+                  className="block text-sm font-medium text-neutral-700"
+                >
+                  Escrow Deposit Time Limit
+                </label>
+                <Input
+                  id="escrow_deposit_time_limit"
+                  type="text"
+                  className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                  value={formData.escrow_deposit_time_limit}
+                  disabled
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label
+                  htmlFor="fiat_payment_time_limit"
+                  className="block text-sm font-medium text-neutral-700"
+                >
+                  Fiat Payment Time Limit
+                </label>
+                <Input
+                  id="fiat_payment_time_limit"
+                  type="text"
+                  className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
+                  value={formData.fiat_payment_time_limit}
+                  disabled
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-[#6d28d9] hover:bg-[#5b21b6] text-white mt-6"
             >
-              Your Account ID
-            </label>
-            <Input
-              id="creator_account_id"
-              type="text"
-              value={formData.creator_account_id}
-              onChange={(e) => setFormData({ ...formData, creator_account_id: e.target.value })}
-              disabled
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="offer_type"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Offer Type
-            </label>
-            <Select
-              value={formData.offer_type}
-              onValueChange={(value) =>
-                setFormData({ ...formData, offer_type: value as "BUY" | "SELL" })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select offer type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="BUY">Buy USDC</SelectItem>
-                <SelectItem value="SELL">Sell USDC</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label
-              htmlFor="min_amount"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Minimum Amount (USDC)
-            </label>
-            <Input
-              id="min_amount"
-              type="number"
-              placeholder="Enter min amount in USDC"
-              value={formData.min_amount}
-              onChange={(e) => setFormData({ ...formData, min_amount: e.target.value })}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="max_amount"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Maximum Amount (USDC)
-            </label>
-            <Input
-              id="max_amount"
-              type="number"
-              placeholder="Enter max amount in USDC"
-              value={formData.max_amount}
-              onChange={(e) => setFormData({ ...formData, max_amount: e.target.value })}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="total_available_amount"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Total Available Amount (USDC)
-            </label>
-            <Input
-              id="total_available_amount"
-              type="number"
-              placeholder="Enter total available in USDC"
-              value={formData.total_available_amount}
-              onChange={(e) =>
-                setFormData({ ...formData, total_available_amount: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="rate_adjustment"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Rate Adjustment
-            </label>
-            <Input
-              id="rate_adjustment"
-              type="number"
-              step="0.01"
-              value={formData.rate_adjustment}
-              onChange={(e) => setFormData({ ...formData, rate_adjustment: e.target.value })}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="terms"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Terms
-            </label>
-            <Input
-              id="terms"
-              type="text"
-              value={formData.terms}
-              onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="escrow_deposit_time_limit"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Escrow Deposit Time Limit
-            </label>
-            <Input
-              id="escrow_deposit_time_limit"
-              type="text"
-              value={formData.escrow_deposit_time_limit}
-              onChange={(e) =>
-                setFormData({ ...formData, escrow_deposit_time_limit: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="fiat_payment_time_limit"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Fiat Payment Time Limit
-            </label>
-            <Input
-              id="fiat_payment_time_limit"
-              type="text"
-              value={formData.fiat_payment_time_limit}
-              onChange={(e) =>
-                setFormData({ ...formData, fiat_payment_time_limit: e.target.value })
-              }
-            />
-          </div>
-          <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800">
-            Create Offer
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+              Create Offer
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

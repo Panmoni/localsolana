@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { Transaction } from "@solana/web3.js";
 import { Link } from "react-router-dom";
 import {
   getOffers,
@@ -25,11 +24,9 @@ function OffersPage() {
 
   useEffect(() => {
     const fetchOffers = async () => {
-      console.log("[OffersPage] Fetching offers...");
       setLoading(true);
       try {
         const response = await getOffers();
-        console.log("[OffersPage] Offers loaded:", response.data);
         setOffers(response.data);
 
         // Fetch creator usernames/wallet addresses
@@ -69,7 +66,6 @@ function OffersPage() {
       };
       const tradeResponse = await createTrade(tradeData);
       const tradeId = tradeResponse.data.id;
-      console.log("[OffersPage] Trade started:", tradeId);
 
       if (primaryWallet) {
         const seller = primaryWallet.address;
@@ -85,21 +81,7 @@ function OffersPage() {
         };
 
         const escrowResponse = await createEscrow(escrowData);
-
-        // Correctly access the structure from the response
-        const txData = escrowResponse.data;
-        console.log("[OffersPage] Escrow instruction generated:", txData);
-
-        // Create a transaction from the data field (base64 encoded)
-        // This assumes you'd actually need to use this Transaction object
-        // If you don't need to create a Transaction, remove this part
-        try {
-          const tx = new Transaction();
-          // Additional logic to build transaction would go here
-          console.log("[OffersPage] Transaction created:", tx);
-        } catch (txErr) {
-          console.error("[OffersPage] Failed to create transaction:", txErr);
-        }
+        console.log("[OffersPage] Escrow instruction generated:", escrowResponse.data);
 
         alert(`Trade ${tradeId} started successfully`);
       } else {
@@ -123,70 +105,108 @@ function OffersPage() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-purple-700">Offers</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {primaryWallet && (
-          <Button className="mb-4 bg-purple-700 hover:bg-purple-800 text-white">
-            <Link to="/create-offer">Create New Offer</Link>
-          </Button>
-        )}
-        {loading && <p className="text-gray-600">Loading offers...</p>}
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {!loading && !error && offers.length === 0 ? (
-          <p className="text-gray-600">No offers available.</p>
-        ) : (
-          !loading && (
-            <Table className="w-full">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-purple-700 px-6">Type</TableHead>
-                  <TableHead className="text-purple-700 px-6">Creator</TableHead>
-                  <TableHead className="text-purple-700 px-6">Min Amount</TableHead>
-                  <TableHead className="text-purple-700 px-6">Max Amount</TableHead>
-                  <TableHead className="text-purple-700 px-6">Total Available</TableHead>
-                  <TableHead className="text-purple-700 px-6">Rate</TableHead>
-                  <TableHead className="text-purple-700 px-6">Last Updated</TableHead>
-                  <TableHead className="text-purple-700 px-6">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {offers.map((offer) => (
-                  <TableRow key={offer.id}>
-                    <TableCell className="px-6">{offer.offer_type}</TableCell>
-                    <TableCell className="px-6">
-                      {creatorNames[offer.creator_account_id] ||
-                       abbreviateWallet(String(offer.creator_account_id))}
-                    </TableCell>
-                    <TableCell className="px-6">{offer.min_amount} {offer.token}</TableCell>
-                    <TableCell className="px-6">{offer.max_amount} {offer.token}</TableCell>
-                    <TableCell className="px-6">{offer.total_available_amount} {offer.token}</TableCell>
-                    <TableCell className="px-6">{formatRate(offer.rate_adjustment)}</TableCell>
-                    <TableCell className="px-6">
-                      {formatDistanceToNow(new Date(offer.updated_at || Date.now()))} ago
-                    </TableCell>
-                    <TableCell className="px-6">
-                      <Button
-                        onClick={() => startTrade(offer.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        Start Trade
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )
-        )}
-      </CardContent>
-    </Card>
+    <div className="w-full max-w-6xl mx-auto">
+      <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+        <CardHeader className="border-b border-neutral-100 bg-white">
+          <CardTitle className="text-[#5b21b6] font-semibold">Available Offers</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="p-4 md:p-5 bg-white border-b border-neutral-100">
+            {primaryWallet && (
+              <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white border-none">
+                <Link to="/create-offer" className="text-white hover:text-white">
+                  Create New Offer
+                </Link>
+              </Button>
+            )}
+          </div>
+
+          {loading && (
+            <div className="flex justify-center items-center py-16">
+              <p className="text-neutral-500">Loading available offers...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-5">
+              <Alert variant="destructive" className="mb-0 border-none bg-red-50">
+                <AlertDescription className="text-red-700">{error}</AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          {!loading && !error && offers.length === 0 ? (
+            <div className="p-10 text-center">
+              <p className="text-neutral-500">No offers available at this time.</p>
+              <p className="text-neutral-400 text-sm mt-2">Check back later or create your own offer.</p>
+            </div>
+          ) : (
+            !loading && (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-neutral-50 hover:bg-neutral-50">
+                      <TableHead className="text-[#6d28d9] font-medium">Type</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Creator</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Min Amount</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Max Amount</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Available</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Rate</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Updated</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {offers.map((offer) => (
+                      <TableRow key={offer.id} className="hover:bg-neutral-50">
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            offer.offer_type === 'BUY'
+                              ? 'bg-[#d1fae5] text-[#065f46]'
+                              : 'bg-[#ede9fe] text-[#5b21b6]'
+                          }`}>
+                            {offer.offer_type}
+                          </span>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {creatorNames[offer.creator_account_id] ||
+                           abbreviateWallet(String(offer.creator_account_id))}
+                        </TableCell>
+                        <TableCell>{offer.min_amount} {offer.token}</TableCell>
+                        <TableCell>{offer.max_amount} {offer.token}</TableCell>
+                        <TableCell>{offer.total_available_amount} {offer.token}</TableCell>
+                        <TableCell>
+                          <span className={
+                            parseFloat(offer.rate_adjustment) > 1
+                              ? 'text-[#059669]'
+                              : parseFloat(offer.rate_adjustment) < 1
+                                ? 'text-red-600'
+                                : 'text-neutral-600'
+                          }>
+                            {formatRate(offer.rate_adjustment)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-neutral-500 text-sm">
+                          {formatDistanceToNow(new Date(offer.updated_at))} ago
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => startTrade(offer.id)}
+                            className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                          >
+                            Start Trade
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
