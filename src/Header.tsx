@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDynamicContext, DynamicWidget, getAuthToken } from "@dynamic-labs/sdk-react-core";
+import { Account } from "./api";
 import { setAuthToken } from "./api";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,9 +14,10 @@ import {
 
 interface HeaderProps {
   isLoggedIn: boolean;
+  account: Account | null;
 }
 
-function Header({ isLoggedIn }: HeaderProps) {
+function Header({ isLoggedIn, account }: HeaderProps) {
   const { setShowAuthFlow } = useDynamicContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -45,8 +47,8 @@ function Header({ isLoggedIn }: HeaderProps) {
               <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger className="focus:outline-none">
                   <Avatar className="cursor-pointer hover:ring-2 hover:ring-purple-700 transition">
-                    <AvatarImage src="/icon96.png" />
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarImage src={account?.profile_photo_url || "/icon96.png"} />
+                    <AvatarFallback>{account?.username?.charAt(0) || "U"}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 bg-white shadow-md">

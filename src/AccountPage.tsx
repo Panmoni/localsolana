@@ -96,6 +96,15 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
 function ProfileDisplay({ account }: { account: Account }) {
   return (
     <div className="space-y-5">
+      {account.profile_photo_url && (
+        <div className="flex justify-center">
+          <img
+            src={account.profile_photo_url}
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover border-2 border-purple-200"
+          />
+        </div>
+      )}
       <div className="border-b border-neutral-100 pb-4">
         <h3 className="text-sm font-medium text-neutral-500 mb-1">Wallet Address</h3>
         <p className="text-neutral-700 font-mono text-sm break-all">{account.wallet_address}</p>

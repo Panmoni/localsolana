@@ -35,7 +35,7 @@ function App() {
 
   return (
     <Router>
-      <Header isLoggedIn={!!primaryWallet} />
+      <Header isLoggedIn={!!primaryWallet} account={account} />
       <main className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center pt-20">
         <div className="w-full max-w-6xl px-4 py-6">
           <Routes>
