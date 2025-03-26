@@ -23,7 +23,7 @@ body {
   line-height: 1.5;
   font-weight: 400;
   color: #1f2937;
-  background-color: #f9fafb;
+  background-color: #FAF9F6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -47,7 +47,7 @@ a:hover {
 
 /* Layout components */
 .app-header {
-  background-color: white;
+  background-color: #FAF9F6;
   color: #1f2937;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   position: fixed;
@@ -116,7 +116,7 @@ a:hover {
 }
 
 .btn-secondary {
-  background-color: #e5e7eb;
+  background-color: #FAF9F6;
   color: #1f2937;
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
@@ -147,7 +147,7 @@ a:hover {
 
 /* Card styles */
 .card-container {
-  background-color: white;
+  background-color: #FAF9F6;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #f3f4f6;
@@ -207,7 +207,7 @@ a:hover {
 /* Footer styles */
 .site-footer {
   flex-shrink: 0;
-  background-color: white;
+  background-color: #FAF9F6;
   border-top: 1px solid #e5e7eb;
   padding: 3rem 1rem;
   margin-top: auto;
