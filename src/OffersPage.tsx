@@ -106,12 +106,12 @@ function OffersPage() {
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
-        <CardHeader className="border-b border-neutral-100 bg-white">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-[#5b21b6] font-semibold">Available Offers</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="p-4 md:p-5 bg-white border-b border-neutral-100">
+          <div className="p-4 md:p-5 border-b border-neutral-100">
             {primaryWallet && (
               <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white border-none">
                 <Link to="/create-offer" className="text-white hover:text-white">
