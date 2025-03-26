@@ -8,6 +8,8 @@
 /* Base styles */
 html {
   height: 100%;
+  font-size: 100%;
+  font-size: clamp(14px, 0.875rem + 0.5vw, 18px);
 }
 
 body {
@@ -59,7 +61,7 @@ a:hover {
 
 .header-left h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   line-height: 2rem;
   color: #5b21b6;
 }
