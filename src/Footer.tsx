@@ -67,8 +67,9 @@ export const Footer: React.FC = () => {
       </div>
 
       <div className="footer-bottom">
-        <p>A <a className="panmoni-link mb-4" href="https://panmoni.com" target='_blank'>Panmoni</a> project</p>
-        <p>&copy; {new Date().getFullYear()} Panmoni</p>
+        <p className="mb-2">The best place for discussion and support is our <a href="https://t.me/Panmoni/802" target='_blank'>Telegram</a> group.</p>
+        <p className="mb-2">También hay soporte en Español en <a href="https://t.me/Panmoni/8042" target='_blank'>Telegram</a>.</p>
+        <p className="mb-2">&copy; {new Date().getFullYear()} A <a className="panmoni-link" href="https://panmoni.com" target='_blank'>Panmoni</a> project</p>
       </div>
     </footer>
   );
