@@ -8,6 +8,10 @@ import AccountPage from "./AccountPage";
 import { getAccount, setAuthToken } from "./api";
 import { Account } from "./api";
 
+import MyOffersPage from "./MyOffersPage";
+import MyTradesPage from "./MyTradesPage";
+import MyEscrowsPage from "./MyEscrowsPage";
+
 function App() {
   const { primaryWallet } = useDynamicContext();
   const [account, setAccount] = useState<Account | null>(null);
@@ -39,26 +43,12 @@ function App() {
       <main className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center pt-20">
         <div className="w-full max-w-6xl px-4 py-6">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h1 className="text-3xl font-bold text-purple-700 mb-6 text-center">LocalSolana</h1>
-                  {account && (
-                    <p className="text-gray-800">
-                      Welcome, <span className="font-medium text-green-600">{account.username}</span>! View your{" "}
-                      <a href="/account" className="text-purple-700 hover:text-purple-800">account details</a>.
-                    </p>
-                  )}
-                </div>
-              }
-            />
             <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
-            <Route path="/offers" element={<OffersPage />} />
+            <Route path="/" element={<OffersPage />} />
             <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
-            <Route path="/my-offers" element={<div>My Offers Page (TBD)</div>} />
-            <Route path="/trades" element={<div>Trades Page (TBD)</div>} />
-            <Route path="/escrows" element={<div>Escrows Page (TBD)</div>} />
+            <Route path="/my-offers" element={<MyOffersPage account={account} /> } />
+            <Route path="/trades" element={<MyTradesPage account={account} /> } />
+            <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
           </Routes>
         </div>
       </main>
