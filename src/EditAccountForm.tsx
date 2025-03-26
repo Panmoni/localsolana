@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { timezones } from "@/lib/timezones";
+import { countryCodes } from "@/lib/countryCodes";
 
 interface EditAccountFormProps {
   account: Account;
@@ -27,38 +29,6 @@ function EditAccountForm({ account, onSaveSuccess, onCancel }: EditAccountFormPr
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // List of timezones for dropdown
-  const timezones = [
-    "America/New_York",
-    "America/Chicago",
-    "America/Denver",
-    "America/Los_Angeles",
-    "America/Anchorage",
-    "America/Honolulu",
-    "Europe/London",
-    "Europe/Berlin",
-    "Europe/Moscow",
-    "Asia/Tokyo",
-    "Asia/Shanghai",
-    "Australia/Sydney",
-    "Pacific/Auckland",
-  ];
-
-  // Examples of country codes with UNIQUE identifiers
-  const countryCodes = [
-    { label: "United States (+1)", value: "+1_US" },
-    { label: "United Kingdom (+44)", value: "+44_UK" },
-    { label: "Canada (+1)", value: "+1_CA" },
-    { label: "Australia (+61)", value: "+61_AU" },
-    { label: "Germany (+49)", value: "+49_DE" },
-    { label: "France (+33)", value: "+33_FR" },
-    { label: "Japan (+81)", value: "+81_JP" },
-    { label: "China (+86)", value: "+86_CN" },
-    { label: "India (+91)", value: "+91_IN" },
-    { label: "Brazil (+55)", value: "+55_BR" },
-    { label: "Russia (+7)", value: "+7_RU" },
-  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

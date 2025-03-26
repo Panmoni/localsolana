@@ -66,7 +66,7 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
             )}
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="px-6">
           {updateSuccess && (
             <Alert className="mb-6 bg-[#d1fae5] border-[#a7f3d0]">
               <AlertDescription className="text-[#065f46]">{updateSuccess}</AlertDescription>
