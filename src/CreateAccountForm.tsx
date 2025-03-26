@@ -1,77 +1,64 @@
-import React, { useState } from 'react';
-import { useDynamicContext, getAuthToken } from '@dynamic-labs/sdk-react-core';
+import { useState } from "react";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { createAccount, Account } from "./api";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-function CreateAccountForm() {
+interface CreateAccountFormProps {
+  setAccount?: (account: Account | null) => void;
+}
+
+function CreateAccountForm({ setAccount }: CreateAccountFormProps) {
   const { primaryWallet } = useDynamicContext();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!primaryWallet?.address) {
-      setError('Please connect your wallet first.');
-      return;
-    }
-    const token = getAuthToken();
-    if (!token) {
-      setError('Authentication token not found. Please authenticate.');
+      setError("Wallet not connected.");
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/accounts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const response = await createAccount({
+        wallet_address: primaryWallet.address,
+        username,
+        email,
+      });
+      const accountId = response.data.id; // Extract id from response
+      setSuccess(`Account created with ID: ${accountId}`);
+      setUsername("");
+      setEmail("");
+      setError("");
+      if (setAccount) {
+        setAccount({
+          id: accountId,
           wallet_address: primaryWallet.address,
           username,
           email,
-        }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Account created:', data);
-        setSuccess(`Account created with ID: ${data.id}`);
-        setUsername('');
-        setEmail('');
-        setError('');
-      } else {
-        const errorText = await response.text();
-        setError(`Failed to create account: ${errorText}`);
+        });
       }
     } catch (err) {
-      setError(`Network error: ${(err as Error).message}`);
+      setError(`Failed to create account: ${(err as Error).message}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="create-account-form">
-      <h2>Create Account</h2>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
-      <div className="form-group">
-        <label>Username:</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+      {success && <Alert><AlertDescription>{success}</AlertDescription></Alert>}
+      <div>
+        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
       </div>
-      <div className="form-group">
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </div>
-      <button type="submit">Create Account</button>
+      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800">Create Account</Button>
     </form>
   );
 }
