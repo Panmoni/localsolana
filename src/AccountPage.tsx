@@ -133,7 +133,7 @@ function ProfileDisplay({ account }: { account: Account }) {
       <div className="border-b border-neutral-100 pb-4">
         <h3 className="text-sm font-medium text-neutral-500 mb-1">Phone</h3>
         <p className="text-neutral-700">
-          {account.phone_country_code && account.phone_number
+          +{account.phone_country_code && account.phone_number
             ? `${account.phone_country_code} ${account.phone_number}`
             : '-'
           }
@@ -158,7 +158,14 @@ function ProfileDisplay({ account }: { account: Account }) {
       <div>
         <h3 className="text-sm font-medium text-neutral-500 mb-1">Member Since</h3>
         <p className="text-neutral-700">
-          {new Date(account.created_at).toLocaleDateString()}
+          {new Date(account.created_at).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          })}
         </p>
       </div>
     </div>
