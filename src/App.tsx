@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDynamicContext, getAuthToken } from "@dynamic-labs/sdk-react-core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./Header";
+import Footer from './Footer';
 import OffersPage from "./OffersPage";
 import CreateOfferPage from "./CreateOfferPage";
 import AccountPage from "./AccountPage";
@@ -39,19 +40,22 @@ function App() {
 
   return (
     <Router>
-      <Header isLoggedIn={!!primaryWallet} account={account} />
-      <main className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center pt-20">
-        <div className="w-full max-w-6xl px-4 py-6">
-          <Routes>
-            <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
-            <Route path="/" element={<OffersPage />} />
-            <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
-            <Route path="/my-offers" element={<MyOffersPage account={account} /> } />
-            <Route path="/trades" element={<MyTradesPage account={account} /> } />
-            <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
-          </Routes>
-        </div>
-      </main>
+      <div className="app">
+        <Header isLoggedIn={!!primaryWallet} account={account} />
+          <main className="main-content">
+            <div className="w-full max-w-6xl px-4 py-6">
+              <Routes>
+                <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
+                <Route path="/" element={<OffersPage />} />
+                <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
+                <Route path="/my-offers" element={<MyOffersPage account={account} /> } />
+                <Route path="/trades" element={<MyTradesPage account={account} /> } />
+                <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
+              </Routes>
+            </div>
+        </main>
+      <Footer />
+      </div>
     </Router>
   );
 }
