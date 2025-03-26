@@ -20,8 +20,8 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
   if (!primaryWallet) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <Card className="border border-neutral-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-1px_rgba(0,0,0,0.06)]">
-          <CardHeader className="border-b border-neutral-100">
+        <Card>
+          <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">Account Profile</CardTitle>
             <CardDescription>View and manage your account settings</CardDescription>
           </CardHeader>
