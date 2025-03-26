@@ -19,9 +19,10 @@ export const Footer: React.FC = () => {
           <h3 className="footer-title">Quick Links</h3>
           <nav className="footer-nav">
             <a target="_blank" href="https://LocalSolana.com/">Features</a>
-            <a href="">Documentation</a>
-            <a href="">Support</a>
+            <a target="_blank"  href="https://localsolana.com/about/">About</a>
             <a target="_blank" href="https://LocalSolana.com/blog">Blog</a>
+            <a target="_blank" href="https://localsolana.com/roadmap/">Roadmap</a>
+            <a target="_blank"  href="https://getwaitlist.com/waitlist/19781">Get on the Waitlist</a>
           </nav>
         </div>
 
@@ -31,7 +32,6 @@ export const Footer: React.FC = () => {
             <a target="_blank" href="https://LocalSolana.com/terms">Terms of Service</a>
             <a target="_blank" href="https://LocalSolana.com/privacy">Privacy Policy</a>
             <a target="_blank" href="https://localsolana.com/disclaimer">Disclaimer</a>
-            <a target="_blank" href="">Cookie Policy</a>
           </nav>
         </div>
 
