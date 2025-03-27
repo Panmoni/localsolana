@@ -18,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { formatDistanceToNow } from "date-fns";
 import FilterBar from "@/components/FilterBar";
 import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
+import NoOffers from "./NoOffers";
 
 function OffersPage() {
   const { primaryWallet } = useDynamicContext();
@@ -241,10 +242,7 @@ function OffersPage() {
           )}
 
           {!loading && !error && filteredOffers.length === 0 ? (
-            <div className="p-10 text-center">
-              <p className="text-neutral-500">No offers available at this time.</p>
-              <p className="text-neutral-400 text-sm mt-2">Check back later or create your own offer.</p>
-            </div>
+            <NoOffers />
           ) : (
             !loading && (
               <>
