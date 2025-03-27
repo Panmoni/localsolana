@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { createOffer } from "./api";
+import { createOffer, getAccount, Account, Offer } from "./api";
 import { Link } from "react-router-dom";
-import { Account, Offer } from "./api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,8 +18,29 @@ interface CreateOfferPageProps {
   account: Account | null;
 }
 
-function CreateOfferPage({ account }: CreateOfferPageProps) {
+function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
+  const [internalAccount, setInternalAccount] = useState<Account | null>(null);
   const { primaryWallet } = useDynamicContext();
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      if (!propAccount && primaryWallet) {
+        try {
+          const response = await getAccount();
+          setInternalAccount(response.data);
+          setFormData(prev => ({
+            ...prev,
+            creator_account_id: response.data.id.toString()
+          }));
+        } catch (err) {
+          console.error("Failed to fetch account:", err);
+        }
+      }
+    };
+    fetchAccount();
+  }, [propAccount, primaryWallet]);
+
+  const account = propAccount || internalAccount;
   const [formData, setFormData] = useState({
     creator_account_id: account?.id || "",
     offer_type: "BUY" as "BUY" | "SELL",
@@ -95,7 +115,7 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
 
       // Reset form
       setFormData({
-        creator_account_id: account?.id || "",
+        creator_account_id: account?.id?.toString() || "",
         offer_type: "BUY",
         token: "USDC",
         min_amount: "",
