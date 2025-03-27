@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 const IntroMessageNotLoggedIn = () => {
+  const { setShowAuthFlow } = useDynamicContext();
   return (
-    <Card className="mb-6 border-[#6d28d9] border-2">
+    <Card className="mb-4 border-[#6d28d9] border-2">
       <CardContent className="px-4 py-2">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="bg-[#ede9fe] p-4 rounded-full">
@@ -24,16 +26,19 @@ const IntroMessageNotLoggedIn = () => {
             </svg>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="text-2xl font-bold text-[#5b21b6] mb-2">
+            <h2 className="text-3xl font-bold text-[#5b21b6] mb-2">
               Welcome to LocalSolana P2P Trading
             </h2>
             <p className="text-neutral-600 mb-4">
-              Connect your wallet to start trading USDC directly with other
-              users. Buy and sell using your preferred payment methods with
-              our on-chain escrow system.
+              Connect your wallet to start trading USDC on Solana directly with other
+              users. Buy and sell using any preferred fiat payment method with
+              our on-chain escrow system. Get <a href="https://faucet.solana.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet SOL</a> and <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet USDC</a> to get started. Support is available in <a href="https://t.me/Panmoni/802" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">English</a> and <a href="https://t.me/Panmoni/804" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">Español</a>.
             </p>
-            <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white">
-              Connect Wallet to Get Started
+            <Button
+              onClick={() => setShowAuthFlow(true)}
+              className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white"
+            >
+              Connect Your Wallet to Get Started
             </Button>
           </div>
         </div>
