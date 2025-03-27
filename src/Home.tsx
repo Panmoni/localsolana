@@ -15,6 +15,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis
+} from "@/components/ui/pagination";
 import { formatDistanceToNow } from "date-fns";
 import FilterBar from "@/components/FilterBar";
 import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
@@ -30,6 +39,11 @@ function OffersPage() {
   const [hasUsername, setHasUsername] = useState<boolean | null>(null);
   const [tradeType, setTradeType] = useState<string>("ALL");
   const [currentCurrency, setCurrentCurrency] = useState<string>("ALL");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 25; // Show 25 offers per page
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Function to apply all active filters - memoized to prevent unnecessary recreations
   const applyFilters = useCallback(() => {
@@ -48,8 +62,17 @@ function OffersPage() {
       filtered = filtered.filter(offer => offer.fiat_currency === currentCurrency);
     }
 
-    setFilteredOffers(filtered);
-  }, [offers, tradeType, currentCurrency]);
+    // Calculate total pages
+    const total = Math.ceil(filtered.length / itemsPerPage);
+    setTotalPages(total);
+
+    // Get current page's offers
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedOffers = filtered.slice(startIndex, endIndex);
+
+    setFilteredOffers(paginatedOffers);
+  }, [offers, tradeType, currentCurrency, currentPage, itemsPerPage]);
 
   // Apply filters whenever offers, currency, or trade type changes
   useEffect(() => {
@@ -58,13 +81,24 @@ function OffersPage() {
 
   const handleCurrencyChange = (currency: string) => {
     setCurrentCurrency(currency);
+    // Reset to first page when changing filters
+    setCurrentPage(1);
     // The applyFilters function will use the updated currentCurrency in the next render
     applyFilters();
   };
 
   const handleTradeTypeChange = (type: string) => {
     setTradeType(type);
+    // Reset to first page when changing filters
+    setCurrentPage(1);
     // The applyFilters function will use the current tradeType and currentCurrency in the next render
+    applyFilters();
+  };
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // The applyFilters function will use the updated currentPage in the next render
     applyFilters();
   };
 
@@ -427,6 +461,114 @@ function OffersPage() {
                 </div>
               </>
             )
+          )}
+
+          {/* Pagination */}
+          {!loading && !error && filteredOffers.length > 0 && (
+            <div className="py-4 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  {/* Previous button */}
+                  {currentPage > 1 && (
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  )}
+
+                  {/* First page */}
+                  <PaginationItem>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(1);
+                      }}
+                    >
+                      1
+                    </PaginationLink>
+                  </PaginationItem>
+
+                  {/* Ellipsis if needed */}
+                  {currentPage > 3 && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+
+                  {/* Pages around current page */}
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const pageNumber = i + 1;
+                    // Show current page and one page before and after (if they exist)
+                    if (
+                      pageNumber !== 1 &&
+                      pageNumber !== totalPages &&
+                      (pageNumber === currentPage ||
+                        pageNumber === currentPage - 1 ||
+                        pageNumber === currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationLink
+                            href="#"
+                            isActive={pageNumber === currentPage}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(pageNumber);
+                            }}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Ellipsis if needed */}
+                  {currentPage < totalPages - 2 && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+
+                  {/* Last page (if not the first page) */}
+                  {totalPages > 1 && (
+                    <PaginationItem>
+                      <PaginationLink
+                        href="#"
+                        isActive={currentPage === totalPages}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(totalPages);
+                        }}
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )}
+
+                  {/* Next button */}
+                  {currentPage < totalPages && (
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage + 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  )}
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </CardContent>
       </Card>
