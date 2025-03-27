@@ -177,7 +177,7 @@ function OffersPage() {
                             {offer.offer_type}
                           </span>
                         </TableCell>
-                        <TableCell className="font-medium">
+                        <TableCell>
                           {creatorNames[offer.creator_account_id] ||
                            abbreviateWallet(String(offer.creator_account_id))}
                         </TableCell>

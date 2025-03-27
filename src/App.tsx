@@ -43,7 +43,7 @@ function App() {
       <div className="app">
         <Header isLoggedIn={!!primaryWallet} account={account} />
           <main className="main-content">
-            <div className="w-full max-w-6xl px-4 py-6">
+            <div className="w-full max-w-6xl px-4">
               <Routes>
                 <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
                 <Route path="/" element={<OffersPage />} />
