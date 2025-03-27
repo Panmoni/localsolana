@@ -6,7 +6,8 @@ import {
   createTrade,
   createEscrow,
   Offer,
-  getAccountById
+  getAccountById,
+  getAccount
 } from "./api";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -21,6 +22,38 @@ function OffersPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [creatorNames, setCreatorNames] = useState<Record<number, string>>({});
+  const [hasUsername, setHasUsername] = useState<boolean | null>(null);
+
+  // Check if the current user has a username set
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (primaryWallet) {
+        try {
+          console.log("[OffersPage] Checking if user has username...");
+          const accountResponse = await getAccount();
+          const hasUsername = !!accountResponse.data.username;
+          console.log("[OffersPage] User has username:", hasUsername, "Username:", accountResponse.data.username);
+          setHasUsername(hasUsername);
+        } catch (err) {
+          console.error("[OffersPage] Failed to fetch user account:", err);
+
+          // Check if it's an Axios error with a 404 status
+          const axiosError = err as { response?: { status: number } };
+          const isNotFound = axiosError.response && axiosError.response.status === 404;
+          console.log("[OffersPage] Is 404 error:", isNotFound);
+
+          // Set hasUsername to false if it's a 404 error (no account exists)
+          setHasUsername(isNotFound ? false : null);
+
+          // Debug current state
+          console.log("[OffersPage] Current state - primaryWallet:", !!primaryWallet, "hasUsername:", isNotFound ? false : null);
+        }
+      } else {
+        console.log("[OffersPage] No wallet connected");
+      }
+    };
+    checkUsername();
+  }, [primaryWallet]);
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -107,9 +140,25 @@ function OffersPage() {
     return "0%";
   };
 
+  // Debug render values
+  console.log("[OffersPage] Rendering with:", {
+    hasUsername,
+    hasPrimaryWallet: !!primaryWallet,
+    showAlert: hasUsername === false && !!primaryWallet
+  });
+
   return (
     <div className="w-full max-w-6xl mx-auto">
       <Card>
+        {hasUsername === false && primaryWallet && (
+          <div>
+            <Alert className="mb-0 border-yellow-300 bg-yellow-50">
+              <AlertDescription className="text-primary-700">
+                <span>You haven't set a username yet. <Link to="/account" className="underline font-medium">Click here</Link> to create your profile.</span>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
