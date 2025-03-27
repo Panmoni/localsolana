@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import Container from "./components/Container";
 
 interface CreateOfferPageProps {
   account: Account | null;
@@ -137,7 +138,7 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
 
   if (!primaryWallet) {
     return (
-      <div className="w-full max-w-2xl mx-auto">
+      <Container className="max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">Create an Offer</CardTitle>
@@ -148,12 +149,12 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <Container className="max-w-2xl">
       <Card>
         <CardHeader>
           <CardTitle className="text-[#5b21b6] font-semibold">Create an Offer</CardTitle>
@@ -394,7 +395,7 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }
 

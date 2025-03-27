@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
+import Container from "./components/Container";
 
 interface MyOffersPageProps {
   account: Account | null;
@@ -89,7 +90,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
 
   if (!primaryWallet) {
     return (
-      <div className="w-full max-w-6xl mx-auto">
+      <Container>
         <Card>
           <CardHeader className="border-b border-neutral-100">
             <CardTitle className="text-[#5b21b6] font-semibold">
@@ -105,13 +106,13 @@ function MyOffersPage({ account }: MyOffersPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   if (!account) {
     return (
-      <div className="w-full max-w-6xl mx-auto">
+      <Container>
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">
@@ -127,23 +128,23 @@ function MyOffersPage({ account }: MyOffersPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <Container>
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <CardTitle className="text-[#5b21b6] font-semibold">
                 My Offers
               </CardTitle>
               <CardDescription>Manage your active offers</CardDescription>
             </div>
-            <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white">
-              <Link to="/create-offer" className="text-white hover:text-white">
+            <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white w-full sm:w-auto">
+              <Link to="/create-offer" className="text-white hover:text-white w-full">
                 Create New Offer
               </Link>
             </Button>
@@ -190,105 +191,182 @@ function MyOffersPage({ account }: MyOffersPageProps) {
             </div>
           ) : (
             !loading && (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-neutral-50 hover:bg-neutral-50">
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        ID
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Type
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Token
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Min Amount
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Max Amount
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Total Available
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Rate
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Currency
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Created
-                      </TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">
-                        Actions
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {myOffers.map((offer) => (
-                      <TableRow key={offer.id} className="hover:bg-neutral-50">
-                        <TableCell>#{offer.id}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              offer.offer_type === "BUY"
-                                ? "bg-[#d1fae5] text-[#065f46]"
-                                : "bg-[#ede9fe] text-[#5b21b6]"
-                            }`}
-                          >
-                            {offer.offer_type}
-                          </span>
-                        </TableCell>
-                        <TableCell>{offer.token}</TableCell>
-                        <TableCell>{offer.min_amount}</TableCell>
-                        <TableCell>{offer.max_amount}</TableCell>
-                        <TableCell>{offer.total_available_amount}</TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              offer.rate_adjustment > 1
-                                ? "text-[#059669]"
-                                : offer.rate_adjustment < 1
-                                ? "text-red-600"
-                                : "text-neutral-600"
-                            }
-                          >
-                            {formatRate(offer.rate_adjustment)}
-                          </span>
-                        </TableCell>
-                        <TableCell>{offer.fiat_currency}</TableCell>
-                        <TableCell className="text-neutral-500 text-sm">
+              <>
+                {/* Mobile card view */}
+                <div className="md:hidden p-4 space-y-4">
+                  {myOffers.map((offer) => (
+                    <div key={offer.id} className="mobile-card-view">
+                      <div className="mobile-card-view-header">
+                        <span>#{offer.id}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          offer.offer_type === 'BUY'
+                            ? 'bg-[#d1fae5] text-[#065f46]'
+                            : 'bg-[#ede9fe] text-[#5b21b6]'
+                        }`}>
+                          {offer.offer_type}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Token</span>
+                        <span>{offer.token}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Amount Range</span>
+                        <span>{offer.min_amount} - {offer.max_amount}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Available</span>
+                        <span>{offer.total_available_amount}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Rate</span>
+                        <span className={
+                          offer.rate_adjustment > 1
+                            ? 'text-[#059669]'
+                            : offer.rate_adjustment < 1
+                              ? 'text-red-600'
+                              : 'text-neutral-600'
+                        }>
+                          {formatRate(offer.rate_adjustment)}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Currency</span>
+                        <span>{offer.fiat_currency}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Created</span>
+                        <span className="text-neutral-500 text-sm">
                           {formatDistanceToNow(new Date(offer.created_at))} ago
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={() => handleDeleteOffer(offer.id)}
-                              className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 text-sm px-3 py-1 h-8"
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </TableCell>
+                        </span>
+                      </div>
+
+                      <div className="mt-4 flex gap-2">
+                        <Button
+                          variant="outline"
+                          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] flex-1"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleDeleteOffer(offer.id)}
+                          className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 flex-1"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop table view */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-neutral-50 hover:bg-neutral-50">
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          ID
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Type
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Token
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Min Amount
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Max Amount
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Total Available
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Rate
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Currency
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Created
+                        </TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">
+                          Actions
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {myOffers.map((offer) => (
+                        <TableRow key={offer.id} className="hover:bg-neutral-50">
+                          <TableCell>#{offer.id}</TableCell>
+                          <TableCell>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                offer.offer_type === "BUY"
+                                  ? "bg-[#d1fae5] text-[#065f46]"
+                                  : "bg-[#ede9fe] text-[#5b21b6]"
+                              }`}
+                            >
+                              {offer.offer_type}
+                            </span>
+                          </TableCell>
+                          <TableCell>{offer.token}</TableCell>
+                          <TableCell>{offer.min_amount}</TableCell>
+                          <TableCell>{offer.max_amount}</TableCell>
+                          <TableCell>{offer.total_available_amount}</TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                offer.rate_adjustment > 1
+                                  ? "text-[#059669]"
+                                  : offer.rate_adjustment < 1
+                                  ? "text-red-600"
+                                  : "text-neutral-600"
+                              }
+                            >
+                              {formatRate(offer.rate_adjustment)}
+                            </span>
+                          </TableCell>
+                          <TableCell>{offer.fiat_currency}</TableCell>
+                          <TableCell className="text-neutral-500 text-sm">
+                            {formatDistanceToNow(new Date(offer.created_at))} ago
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => handleDeleteOffer(offer.id)}
+                                className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 text-sm px-3 py-1 h-8"
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )
           )}
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }
 

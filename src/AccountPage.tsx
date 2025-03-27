@@ -6,6 +6,7 @@ import EditAccountForm from "./EditAccountForm";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import Container from "./components/Container";
 
 interface AccountPageProps {
   account: Account | null;
@@ -19,7 +20,7 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
 
   if (!primaryWallet) {
     return (
-      <div className="w-full max-w-2xl mx-auto">
+      <Container className="max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">Account Profile</CardTitle>
@@ -31,7 +32,7 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
@@ -47,7 +48,7 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <Container className="max-w-2xl">
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -88,7 +89,7 @@ function AccountPage({ account, setAccount }: AccountPageProps) {
           )}
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }
 

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import Container from "./components/Container";
 
 interface MyTradesPageProps {
   account: Account | null;
@@ -144,7 +145,7 @@ function MyTradesPage({ account }: MyTradesPageProps) {
 
   if (!primaryWallet) {
     return (
-      <div className="w-full max-w-6xl mx-auto">
+      <Container>
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">My Trades</CardTitle>
@@ -156,13 +157,13 @@ function MyTradesPage({ account }: MyTradesPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   if (!account) {
     return (
-      <div className="w-full max-w-6xl mx-auto">
+      <Container>
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">My Trades</CardTitle>
@@ -176,12 +177,12 @@ function MyTradesPage({ account }: MyTradesPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <Container>
       <Card>
         <CardHeader>
           <div>
@@ -221,80 +222,152 @@ function MyTradesPage({ account }: MyTradesPageProps) {
             </div>
           ) : (
             !loading && (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-neutral-50 hover:bg-neutral-50">
-                      <TableHead className="text-[#6d28d9] font-medium">Trade ID</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Role</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Token</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Amount</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Status</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Created</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {myTrades.map((trade) => (
-                      <TableRow key={trade.id} className="hover:bg-neutral-50">
-                        <TableCell className="font-medium">#{trade.id}</TableCell>
-                        <TableCell>
-                          {isUserBuyer(trade) ? (
-                            <Badge className="bg-[#ede9fe] text-[#5b21b6] hover:bg-[#ddd6fe]">Buyer</Badge>
-                          ) : (
-                            <Badge className="bg-[#d1fae5] text-[#065f46] hover:bg-[#a7f3d0]">Seller</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>{trade.leg1_crypto_token}</TableCell>
-                        <TableCell>{trade.leg1_crypto_amount}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(trade.leg1_state)}`}>
-                            {trade.leg1_state.replace(/_/g, ' ')}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-neutral-500 text-sm">
+              <>
+                {/* Mobile card view */}
+                <div className="md:hidden p-4 space-y-4">
+                  {myTrades.map((trade) => (
+                    <div key={trade.id} className="mobile-card-view">
+                      <div className="mobile-card-view-header">
+                        <span>#{trade.id}</span>
+                        {isUserBuyer(trade) ? (
+                          <Badge className="bg-[#ede9fe] text-[#5b21b6] hover:bg-[#ddd6fe]">Buyer</Badge>
+                        ) : (
+                          <Badge className="bg-[#d1fae5] text-[#065f46] hover:bg-[#a7f3d0]">Seller</Badge>
+                        )}
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Token</span>
+                        <span>{trade.leg1_crypto_token}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Amount</span>
+                        <span>{trade.leg1_crypto_amount}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Status</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(trade.leg1_state)}`}>
+                          {trade.leg1_state.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Created</span>
+                        <span className="text-neutral-500 text-sm">
                           {formatDistanceToNow(new Date(trade.created_at))} ago
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            {isUserBuyer(trade) && trade.leg1_state === "AWAITING_FIAT_PAYMENT" && (
-                              <Button
-                                onClick={() => handleMarkPaid(trade.id)}
-                                className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white text-sm px-3 py-1 h-8"
-                              >
-                                Mark Paid
-                              </Button>
-                            )}
+                        </span>
+                      </div>
 
-                            {isUserSeller(trade) && trade.leg1_state === "PENDING_CRYPTO_RELEASE" && (
-                              <Button
-                                onClick={handleReleaseEscrow}
-                                className="bg-[#10b981] hover:bg-[#059669] text-white text-sm px-3 py-1 h-8"
-                              >
-                                Release
-                              </Button>
-                            )}
+                      <div className="mt-4 space-y-2">
+                        {isUserBuyer(trade) && trade.leg1_state === "AWAITING_FIAT_PAYMENT" && (
+                          <Button
+                            onClick={() => handleMarkPaid(trade.id)}
+                            className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white w-full"
+                          >
+                            Mark Paid
+                          </Button>
+                        )}
 
-                            <Button
-                              variant="outline"
-                              className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
-                            >
-                              <Link to={`/trades/${trade.id}`}>
-                                Details
-                              </Link>
-                            </Button>
-                          </div>
-                        </TableCell>
+                        {isUserSeller(trade) && trade.leg1_state === "PENDING_CRYPTO_RELEASE" && (
+                          <Button
+                            onClick={handleReleaseEscrow}
+                            className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
+                          >
+                            Release
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="outline"
+                          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
+                        >
+                          <Link to={`/trades/${trade.id}`} className="w-full block">
+                            Details
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop table view */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-neutral-50 hover:bg-neutral-50">
+                        <TableHead className="text-[#6d28d9] font-medium">Trade ID</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Role</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Token</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Amount</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Status</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Created</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {myTrades.map((trade) => (
+                        <TableRow key={trade.id} className="hover:bg-neutral-50">
+                          <TableCell className="font-medium">#{trade.id}</TableCell>
+                          <TableCell>
+                            {isUserBuyer(trade) ? (
+                              <Badge className="bg-[#ede9fe] text-[#5b21b6] hover:bg-[#ddd6fe]">Buyer</Badge>
+                            ) : (
+                              <Badge className="bg-[#d1fae5] text-[#065f46] hover:bg-[#a7f3d0]">Seller</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>{trade.leg1_crypto_token}</TableCell>
+                          <TableCell>{trade.leg1_crypto_amount}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(trade.leg1_state)}`}>
+                              {trade.leg1_state.replace(/_/g, ' ')}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-neutral-500 text-sm">
+                            {formatDistanceToNow(new Date(trade.created_at))} ago
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              {isUserBuyer(trade) && trade.leg1_state === "AWAITING_FIAT_PAYMENT" && (
+                                <Button
+                                  onClick={() => handleMarkPaid(trade.id)}
+                                  className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white text-sm px-3 py-1 h-8"
+                                >
+                                  Mark Paid
+                                </Button>
+                              )}
+
+                              {isUserSeller(trade) && trade.leg1_state === "PENDING_CRYPTO_RELEASE" && (
+                                <Button
+                                  onClick={handleReleaseEscrow}
+                                  className="bg-[#10b981] hover:bg-[#059669] text-white text-sm px-3 py-1 h-8"
+                                >
+                                  Release
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="outline"
+                                className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
+                              >
+                                <Link to={`/trades/${trade.id}`}>
+                                  Details
+                                </Link>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )
           )}
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }
 
