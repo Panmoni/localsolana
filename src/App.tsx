@@ -48,7 +48,7 @@ function App() {
                 <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
                 <Route path="/" element={<OffersPage />} />
                 <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
-                <Route path="/my-offers" element={<MyOffersPage account={account} /> } />
+                <Route path="/offers" element={<MyOffersPage account={account} /> } />
                 <Route path="/trades" element={<MyTradesPage account={account} /> } />
                 <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
               </Routes>

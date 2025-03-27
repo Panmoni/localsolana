@@ -67,7 +67,7 @@ function Header({ isLoggedIn, account }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/my-offers" className="w-full text-gray-800 hover:text-purple-700">
+                    <Link to="/offers" className="w-full text-gray-800 hover:text-purple-700">
                       My Offers
                     </Link>
                   </DropdownMenuItem>
