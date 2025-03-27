@@ -11,7 +11,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
 
@@ -111,18 +111,21 @@ function OffersPage() {
     <div className="w-full max-w-6xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-[#5b21b6] font-semibold">Available Offers</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="p-4 md:p-5 border-b border-neutral-100">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-[#5b21b6] font-semibold">Available Offers</CardTitle>
+              <CardDescription>Start a simple P2P trade from one of the available offers</CardDescription>
+            </div>
             {primaryWallet && (
-              <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white border-none">
+              <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white">
                 <Link to="/create-offer" className="text-white hover:text-white">
                   Create New Offer
                 </Link>
               </Button>
             )}
           </div>
+        </CardHeader>
+        <CardContent className="p-0">
 
           {loading && (
             <div className="flex justify-center items-center py-16">
