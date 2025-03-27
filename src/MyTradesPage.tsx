@@ -216,7 +216,7 @@ function MyTradesPage({ account }: MyTradesPageProps) {
             <div className="p-10 text-center">
               <p className="text-neutral-500">You don't have any trades yet.</p>
               <p className="text-neutral-400 text-sm mt-2">
-                Visit the <Link to="/offers" className="text-[#6d28d9] hover:text-[#5b21b6]">offers page</Link> to start trading.
+                Visit the <Link to="/" className="text-[#6d28d9] hover:text-[#5b21b6]">home page</Link> to start trading.
               </p>
             </div>
           ) : (

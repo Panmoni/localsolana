@@ -185,7 +185,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                 You haven't created any offers yet.
               </p>
               <p className="text-neutral-400 text-sm mt-2">
-                Create your first offer to start trading on the platform.
+                Create your first offer to start trading on LocalSolana.
               </p>
             </div>
           ) : (
