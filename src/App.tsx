@@ -3,7 +3,7 @@ import { useDynamicContext, getAuthToken } from "@dynamic-labs/sdk-react-core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./Header";
 import Footer from './Footer';
-import OffersPage from "./OffersPage";
+import OffersPage from "./Home";
 import CreateOfferPage from "./CreateOfferPage";
 import AccountPage from "./AccountPage";
 import { getAccount, setAuthToken } from "./api";
