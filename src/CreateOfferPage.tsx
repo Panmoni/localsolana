@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { CurrencyOptions } from "./lib/currencyOptions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Container from "./components/Container";
 
@@ -302,10 +303,7 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent className="bg-neutral-100">
-                  <SelectItem value="USD">US Dollar (USD)</SelectItem>
-                  <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
-                  <SelectItem value="VES">Venezuelan Bolivar (VES)</SelectItem>
-                  <SelectItem value="COP">Colombian Peso (COP)</SelectItem>
+                  <CurrencyOptions />
                 </SelectContent>
               </Select>
               <p className="text-xs text-neutral-500">
