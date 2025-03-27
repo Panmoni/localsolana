@@ -15,17 +15,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
+import FilterBar from "@/components/FilterBar";
 import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
 
 function OffersPage() {
   const { primaryWallet } = useDynamicContext();
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [creatorNames, setCreatorNames] = useState<Record<number, string>>({});
   const [hasUsername, setHasUsername] = useState<boolean | null>(null);
 
   // Check if the current user has a username set
+  useEffect(() => {
+    setFilteredOffers(offers);
+  }, [offers]);
+
+  const handleCurrencyChange = (currency: string) => {
+    setFilteredOffers(currency === 'ALL' ? offers : offers.filter(offer => offer.fiat_currency === currency));
+  };
+
   useEffect(() => {
     const checkUsername = async () => {
       if (primaryWallet) {
@@ -177,6 +187,9 @@ function OffersPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
+          <div className="p-4">
+            <FilterBar onCurrencyChange={handleCurrencyChange} />
+          </div>
 
           {loading && (
             <div className="flex justify-center items-center py-16">
@@ -192,7 +205,7 @@ function OffersPage() {
             </div>
           )}
 
-          {!loading && !error && offers.length === 0 ? (
+          {!loading && !error && filteredOffers.length === 0 ? (
             <div className="p-10 text-center">
               <p className="text-neutral-500">No offers available at this time.</p>
               <p className="text-neutral-400 text-sm mt-2">Check back later or create your own offer.</p>
@@ -202,7 +215,7 @@ function OffersPage() {
               <>
                 {/* Mobile card view */}
                 <div className="md:hidden p-4 space-y-4">
-                  {offers.map((offer) => (
+                  {filteredOffers.map((offer) => (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
                         <span>{offer.id}</span>
@@ -294,7 +307,7 @@ function OffersPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {offers.map((offer) => (
+                      {filteredOffers.map((offer) => (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
                           <TableCell>{offer.id}</TableCell>
                           <TableCell>
