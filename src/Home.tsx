@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
+import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
 
 function OffersPage() {
   const { primaryWallet } = useDynamicContext();
@@ -149,6 +150,7 @@ function OffersPage() {
 
   return (
     <div className="w-full max-w-6xl mx-auto">
+      {!primaryWallet && <IntroMessageNotLoggedIn />}
       <Card>
         {hasUsername === false && primaryWallet && (
           <div>
