@@ -149,7 +149,7 @@ function OffersPage() {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full">
       {!primaryWallet && <IntroMessageNotLoggedIn />}
       <Card>
         {hasUsername === false && primaryWallet && (
@@ -162,14 +162,14 @@ function OffersPage() {
           </div>
         )}
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <CardTitle className="text-[#5b21b6] font-semibold">Available Offers</CardTitle>
               <CardDescription>Start a simple P2P trade from one of the available offers</CardDescription>
             </div>
             {primaryWallet && (
-              <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white">
-                <Link to="/create-offer" className="text-white hover:text-white">
+              <Button className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white w-full sm:w-auto">
+                <Link to="/create-offer" className="text-white hover:text-white w-full">
                   Create New Offer
                 </Link>
               </Button>
@@ -199,78 +199,157 @@ function OffersPage() {
             </div>
           ) : (
             !loading && (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-neutral-50 hover:bg-neutral-50">
-                      <TableHead className="text-[#6d28d9] font-medium">ID</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Type</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Creator</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Min Amount</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Max Amount</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Available</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Rate</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Currency</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Updated</TableHead>
-                      <TableHead className="text-[#6d28d9] font-medium">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {offers.map((offer) => (
-                      <TableRow key={offer.id} className="hover:bg-neutral-50">
-                        <TableCell>#{offer.id}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            offer.offer_type === 'BUY'
-                              ? 'bg-[#d1fae5] text-[#065f46]'
-                              : 'bg-[#ede9fe] text-[#5b21b6]'
-                          }`}>
-                            {offer.offer_type}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          {creatorNames[offer.creator_account_id] ||
-                           abbreviateWallet(String(offer.creator_account_id))}
-                        </TableCell>
-                        <TableCell>{offer.min_amount} {offer.token}</TableCell>
-                        <TableCell>{offer.max_amount} {offer.token}</TableCell>
-                        <TableCell>{offer.total_available_amount} {offer.token}</TableCell>
-                        <TableCell>
-                          <span className={
-                            offer.rate_adjustment > 1
-                              ? 'text-[#059669]'
-                              : offer.rate_adjustment < 1
-                                ? 'text-red-600'
-                                : 'text-neutral-600'
-                          }>
-                            {formatRate(offer.rate_adjustment)}
-                          </span>
-                          </TableCell>
-                          <TableCell>{offer.fiat_currency}</TableCell>
-                          <TableCell className="text-neutral-500 text-sm">
+              <>
+                {/* Mobile card view */}
+                <div className="md:hidden p-4 space-y-4">
+                  {offers.map((offer) => (
+                    <div key={offer.id} className="mobile-card-view">
+                      <div className="mobile-card-view-header">
+                        <span>#{offer.id}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          offer.offer_type === 'BUY'
+                            ? 'bg-[#d1fae5] text-[#065f46]'
+                            : 'bg-[#ede9fe] text-[#5b21b6]'
+                        }`}>
+                          {offer.offer_type}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Creator</span>
+                        <span>{creatorNames[offer.creator_account_id] ||
+                          abbreviateWallet(String(offer.creator_account_id))}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Amount</span>
+                        <span>{offer.min_amount} - {offer.max_amount} {offer.token}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Available</span>
+                        <span>{offer.total_available_amount} {offer.token}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Rate</span>
+                        <span className={
+                          offer.rate_adjustment > 1
+                            ? 'text-[#059669]'
+                            : offer.rate_adjustment < 1
+                              ? 'text-red-600'
+                              : 'text-neutral-600'
+                        }>
+                          {formatRate(offer.rate_adjustment)}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Currency</span>
+                        <span>{offer.fiat_currency}</span>
+                      </div>
+
+                      <div className="mobile-card-view-row">
+                        <span className="mobile-card-view-label">Updated</span>
+                        <span className="text-neutral-500 text-sm">
                           {formatDistanceToNow(new Date(offer.updated_at))} ago
-                        </TableCell>
-                        <TableCell>
-                          {primaryWallet ? (
-                            <Button
-                              onClick={() => startTrade(offer.id)}
-                              className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
-                            >
-                              Start Trade
-                            </Button>
-                          ) : (
-                            <Button
-                              className="bg-gray-400 hover:bg-gray-500 text-white border-none text-sm px-3 py-1 h-8 cursor-not-allowed"
-                            >
-                              Connect Wallet to Trade
-                            </Button>
-                          )}
-                        </TableCell>
+                        </span>
+                      </div>
+
+                      <div className="mt-4">
+                        {primaryWallet ? (
+                          <Button
+                            onClick={() => startTrade(offer.id)}
+                            className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
+                          >
+                            Start Trade
+                          </Button>
+                        ) : (
+                          <Button
+                            className="bg-gray-400 hover:bg-gray-500 text-white w-full cursor-not-allowed"
+                          >
+                            Connect Wallet to Trade
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop table view */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-neutral-50 hover:bg-neutral-50">
+                        <TableHead className="text-[#6d28d9] font-medium">ID</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Type</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Creator</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Min Amount</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Max Amount</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Available</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Rate</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Currency</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Updated</TableHead>
+                        <TableHead className="text-[#6d28d9] font-medium">Action</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {offers.map((offer) => (
+                        <TableRow key={offer.id} className="hover:bg-neutral-50">
+                          <TableCell>#{offer.id}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              offer.offer_type === 'BUY'
+                                ? 'bg-[#d1fae5] text-[#065f46]'
+                                : 'bg-[#ede9fe] text-[#5b21b6]'
+                            }`}>
+                              {offer.offer_type}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {creatorNames[offer.creator_account_id] ||
+                             abbreviateWallet(String(offer.creator_account_id))}
+                          </TableCell>
+                          <TableCell>{offer.min_amount} {offer.token}</TableCell>
+                          <TableCell>{offer.max_amount} {offer.token}</TableCell>
+                          <TableCell>{offer.total_available_amount} {offer.token}</TableCell>
+                          <TableCell>
+                            <span className={
+                              offer.rate_adjustment > 1
+                                ? 'text-[#059669]'
+                                : offer.rate_adjustment < 1
+                                  ? 'text-red-600'
+                                  : 'text-neutral-600'
+                            }>
+                              {formatRate(offer.rate_adjustment)}
+                            </span>
+                            </TableCell>
+                            <TableCell>{offer.fiat_currency}</TableCell>
+                            <TableCell className="text-neutral-500 text-sm">
+                            {formatDistanceToNow(new Date(offer.updated_at))} ago
+                          </TableCell>
+                          <TableCell>
+                            {primaryWallet ? (
+                              <Button
+                                onClick={() => startTrade(offer.id)}
+                                className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                              >
+                                Start Trade
+                              </Button>
+                            ) : (
+                              <Button
+                                className="bg-gray-400 hover:bg-gray-500 text-white border-none text-sm px-3 py-1 h-8 cursor-not-allowed"
+                              >
+                                Connect Wallet to Trade
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )
           )}
         </CardContent>

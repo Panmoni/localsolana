@@ -8,6 +8,7 @@ import CreateOfferPage from "./CreateOfferPage";
 import AccountPage from "./AccountPage";
 import { getAccount, setAuthToken } from "./api";
 import { Account } from "./api";
+import Container from "./components/Container";
 
 import MyOffersPage from "./MyOffersPage";
 import MyTradesPage from "./MyTradesPage";
@@ -42,19 +43,19 @@ function App() {
     <Router>
       <div className="app">
         <Header isLoggedIn={!!primaryWallet} account={account} />
-          <main className="main-content">
-            <div className="w-full max-w-6xl px-4">
-              <Routes>
-                <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
-                <Route path="/" element={<OffersPage />} />
-                <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
-                <Route path="/offers" element={<MyOffersPage account={account} /> } />
-                <Route path="/trades" element={<MyTradesPage account={account} /> } />
-                <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
-              </Routes>
-            </div>
+        <main className="main-content">
+          <Container>
+            <Routes>
+              <Route path="/account" element={<AccountPage account={account} setAccount={setAccount} />} />
+              <Route path="/" element={<OffersPage />} />
+              <Route path="/create-offer" element={<CreateOfferPage account={account} />} />
+              <Route path="/offers" element={<MyOffersPage account={account} /> } />
+              <Route path="/trades" element={<MyTradesPage account={account} /> } />
+              <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
+            </Routes>
+          </Container>
         </main>
-      <Footer />
+        <Footer />
       </div>
     </Router>
   );
