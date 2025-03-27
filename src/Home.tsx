@@ -205,7 +205,7 @@ function OffersPage() {
                   {offers.map((offer) => (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
-                        <span>#{offer.id}</span>
+                        <span>{offer.id}</span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           offer.offer_type === 'BUY'
                             ? 'bg-[#d1fae5] text-[#065f46]'
@@ -296,7 +296,7 @@ function OffersPage() {
                     <TableBody>
                       {offers.map((offer) => (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
-                          <TableCell>#{offer.id}</TableCell>
+                          <TableCell>{offer.id}</TableCell>
                           <TableCell>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                               offer.offer_type === 'BUY'

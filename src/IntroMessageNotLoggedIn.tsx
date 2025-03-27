@@ -5,8 +5,8 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 const IntroMessageNotLoggedIn = () => {
   const { setShowAuthFlow } = useDynamicContext();
   return (
-    <Card className="mb-4 border-[#6d28d9] border-2">
-      <CardContent className="px-4 py-4 sm:py-6">
+    <Card className="my-4 border-[#6d28d9] border-2">
+      <CardContent className="px-4 py-2 sm:py-2">
         <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
           <div className="bg-[#ede9fe] p-3 sm:p-4 rounded-full">
             <svg
