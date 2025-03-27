@@ -226,7 +226,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                   <TableBody>
                     {myOffers.map((offer) => (
                       <TableRow key={offer.id} className="hover:bg-neutral-50">
-                        <TableCell>{offer.id}</TableCell>
+                        <TableCell>#{offer.id}</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
