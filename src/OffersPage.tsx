@@ -97,8 +97,7 @@ function OffersPage() {
     return address.length > 8 ? `${address.slice(0, 4)}...${address.slice(-4)}` : address;
   };
 
-  const formatRate = (rateStr: string) => {
-    const rate = parseFloat(rateStr);
+  const formatRate = (rate: number) => {
     if (rate > 1) return `+${((rate - 1) * 100).toFixed(1)}%`;
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(1)}%`;
     return "0%";
@@ -177,9 +176,9 @@ function OffersPage() {
                         <TableCell>{offer.total_available_amount} {offer.token}</TableCell>
                         <TableCell>
                           <span className={
-                            parseFloat(offer.rate_adjustment) > 1
+                            offer.rate_adjustment > 1
                               ? 'text-[#059669]'
-                              : parseFloat(offer.rate_adjustment) < 1
+                              : offer.rate_adjustment < 1
                                 ? 'text-red-600'
                                 : 'text-neutral-600'
                           }>

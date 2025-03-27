@@ -74,18 +74,18 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
     }
 
     try {
-      // Fix: Convert values to strings to match the Offer interface
+      // Prepare offer data with proper numeric types
       const data: Partial<Offer> = {
         creator_account_id: accountId,
         offer_type: formData.offer_type,
         token: formData.token,
-        min_amount: String(minAmount),             // Convert to string
-        max_amount: String(maxAmount),             // Convert to string
-        total_available_amount: String(totalAmount), // Convert to string
-        rate_adjustment: formData.rate_adjustment,  // Already string
+        min_amount: minAmount,
+        max_amount: maxAmount,
+        total_available_amount: totalAmount,
+        rate_adjustment: Number(formData.rate_adjustment),
         terms: formData.terms,
-        escrow_deposit_time_limit: { minutes: 15 }, // Use object structure
-        fiat_payment_time_limit: { minutes: 30 }    // Use object structure
+        escrow_deposit_time_limit: { minutes: 15 },
+        fiat_payment_time_limit: { minutes: 30 }
       };
 
       const response = await createOffer(data);

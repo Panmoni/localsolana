@@ -58,10 +58,10 @@ export interface Offer {
   creator_account_id: number;
   offer_type: "BUY" | "SELL";
   token: string;
-  min_amount: string; // API returns these as strings
-  max_amount: string;
-  total_available_amount: string;
-  rate_adjustment: string;
+  min_amount: number;
+  max_amount: number;
+  total_available_amount: number;
+  rate_adjustment: number;
   terms: string;
   escrow_deposit_time_limit: { minutes: number };
   fiat_payment_time_limit: { minutes: number };
