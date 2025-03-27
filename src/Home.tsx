@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import FilterBar from "@/components/FilterBar";
 import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
@@ -159,9 +160,10 @@ function OffersPage() {
   });
 
   return (
-    <div className="w-full">
-      {!primaryWallet && <IntroMessageNotLoggedIn />}
-      <Card>
+    <TooltipProvider>
+      <div className="w-full">
+        {!primaryWallet && <IntroMessageNotLoggedIn />}
+        <Card>
         {hasUsername === false && primaryWallet && (
           <div>
             <Alert className="mb-0 border-yellow-300 bg-yellow-50">
@@ -219,13 +221,28 @@ function OffersPage() {
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
                         <span>{offer.id}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          offer.offer_type === 'BUY'
-                            ? 'bg-[#d1fae5] text-[#065f46]'
-                            : 'bg-[#ede9fe] text-[#5b21b6]'
-                        }`}>
-                          {offer.offer_type}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              offer.offer_type === 'BUY'
+                                ? 'bg-[#d1fae5] text-[#065f46]'
+                                : 'bg-[#ede9fe] text-[#5b21b6]'
+                            }`}>
+                              {offer.offer_type}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className={
+                            offer.offer_type === 'BUY'
+                              ? 'bg-[#d1fae5] text-[#065f46]'
+                              : 'bg-[#ede9fe] text-[#5b21b6]'
+                          }>
+                            <p>
+                              {offer.offer_type === 'BUY'
+                                ? 'An offer to buy crypto from you'
+                                : 'An offer to sell crypto to you'}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
 
                       <div className="mobile-card-view-row">
@@ -311,13 +328,28 @@ function OffersPage() {
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
                           <TableCell>{offer.id}</TableCell>
                           <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              offer.offer_type === 'BUY'
-                                ? 'bg-[#d1fae5] text-[#065f46]'
-                                : 'bg-[#ede9fe] text-[#5b21b6]'
-                            }`}>
-                              {offer.offer_type}
-                            </span>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  offer.offer_type === 'BUY'
+                                    ? 'bg-[#d1fae5] text-[#065f46]'
+                                    : 'bg-[#ede9fe] text-[#5b21b6]'
+                                }`}>
+                                  {offer.offer_type}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent className={
+                                offer.offer_type === 'BUY'
+                                  ? 'bg-[#d1fae5] text-[#065f46]'
+                                  : 'bg-[#ede9fe] text-[#5b21b6]'
+                              }>
+                                <p>
+                                  {offer.offer_type === 'BUY'
+                                  ? 'An offer to buy crypto from you'
+                                  : 'An offer to sell crypto to you'}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                           <TableCell>
                             {creatorNames[offer.creator_account_id] ||
@@ -368,6 +400,7 @@ function OffersPage() {
         </CardContent>
       </Card>
     </div>
+    </TooltipProvider>
   );
 }
 
