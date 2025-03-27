@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { CurrencyOptions } from "@/lib/currencyOptions";
 
 interface FilterBarProps {
@@ -23,11 +24,17 @@ const FilterBar = ({ onCurrencyChange, onTradeTypeChange }: FilterBarProps) => {
     }
   };
 
+  const clearFilters = () => {
+    setCurrency("ALL");
+    setTradeType("ALL");
+    onCurrencyChange("ALL");
+    if (onTradeTypeChange) {
+      onTradeTypeChange("ALL");
+    }
+  };
+
   return (
     <div className="flex flex-wrap justify-end items-center gap-3">
-      <div className="text-neutral-700 font-thin text-xs sm:text-sm">
-        Filter offers
-      </div>
       <div className="w-auto">
         <Select value={tradeType} onValueChange={handleTradeTypeChange}>
           <SelectTrigger className="w-full sm:w-[200px] border-neutral-300 focus:ring-[#8b5cf6]">
@@ -51,6 +58,15 @@ const FilterBar = ({ onCurrencyChange, onTradeTypeChange }: FilterBarProps) => {
           </SelectContent>
         </Select>
       </div>
+      <Button
+        onClick={clearFilters}
+        variant="ghost"
+        size="sm"
+        title="Clear filters"
+        className="m-0 p-0 text-xs text-neutral-500 hover:text-[#5b21b6] hover:bg-purple-50"
+      >
+        x
+      </Button>
     </div>
   );
 };
