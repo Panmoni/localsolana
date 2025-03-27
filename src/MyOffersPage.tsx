@@ -19,6 +19,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
 
@@ -87,9 +88,9 @@ function MyOffersPage({ account }: MyOffersPageProps) {
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(1)}%`;
     return "0%";
   };
-
-  if (!primaryWallet) {
-    return (
+if (!primaryWallet) {
+  return (
+    <TooltipProvider>
       <Container>
         <Card>
           <CardHeader className="border-b border-neutral-100">
@@ -106,13 +107,15 @@ function MyOffersPage({ account }: MyOffersPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </Container>
+        </Container>
+      </TooltipProvider>
     );
   }
 
   if (!account) {
     return (
-      <Container>
+      <TooltipProvider>
+        <Container>
         <Card>
           <CardHeader>
             <CardTitle className="text-[#5b21b6] font-semibold">
@@ -128,11 +131,12 @@ function MyOffersPage({ account }: MyOffersPageProps) {
             </Alert>
           </CardContent>
         </Card>
-      </Container>
+        </Container>
+      </TooltipProvider>
     );
   }
-
-  return (
+return (
+  <TooltipProvider>
     <Container>
       <Card>
         <CardHeader>
@@ -197,14 +201,29 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                   {myOffers.map((offer) => (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
-                        <span>#{offer.id}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          offer.offer_type === 'BUY'
-                            ? 'bg-[#d1fae5] text-[#065f46]'
-                            : 'bg-[#ede9fe] text-[#5b21b6]'
-                        }`}>
-                          {offer.offer_type}
-                        </span>
+                        <span>{offer.id}</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              offer.offer_type === 'BUY'
+                                ? 'bg-[#d1fae5] text-[#065f46]'
+                                : 'bg-[#ede9fe] text-[#5b21b6]'
+                            }`}>
+                              {offer.offer_type}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className={
+                            offer.offer_type === 'BUY'
+                              ? 'bg-[#d1fae5] text-[#065f46]'
+                              : 'bg-[#ede9fe] text-[#5b21b6]'
+                          }>
+                            <p>
+                              {offer.offer_type === 'BUY'
+                                ? 'You are buying USDC from others'
+                                : 'You are selling USDC to others'}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
 
                       <div className="mobile-card-view-row">
@@ -306,17 +325,32 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                     <TableBody>
                       {myOffers.map((offer) => (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
-                          <TableCell>#{offer.id}</TableCell>
+                          <TableCell>{offer.id}</TableCell>
                           <TableCell>
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    offer.offer_type === "BUY"
+                                      ? "bg-[#d1fae5] text-[#065f46]"
+                                      : "bg-[#ede9fe] text-[#5b21b6]"
+                                  }`}
+                                >
+                                  {offer.offer_type}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent className={
                                 offer.offer_type === "BUY"
                                   ? "bg-[#d1fae5] text-[#065f46]"
                                   : "bg-[#ede9fe] text-[#5b21b6]"
-                              }`}
-                            >
-                              {offer.offer_type}
-                            </span>
+                              }>
+                                <p>
+                                  {offer.offer_type === "BUY"
+                                  ? 'You are buying USDC from others'
+                                  : 'You are selling USDC to others'}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                           <TableCell>{offer.token}</TableCell>
                           <TableCell>{offer.min_amount}</TableCell>
@@ -367,6 +401,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
         </CardContent>
       </Card>
     </Container>
+  </TooltipProvider>
   );
 }
 
