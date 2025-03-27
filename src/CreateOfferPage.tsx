@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { createOffer } from "./api";
+import { Link } from "react-router-dom";
 import { Account, Offer } from "./api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
     fiat_payment_time_limit: "30 minutes",
   });
   const [success, setSuccess] = useState("");
+
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,7 +91,7 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
       };
 
       const response = await createOffer(data);
-      setSuccess(`Offer created successfully with ID: ${response.data.id}`);
+      setSuccess(`Offer created successfully with ID: ${response.data.id}.`);
 
       // Reset form
       setFormData({
@@ -136,7 +138,17 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
         <CardContent className="p-6">
           {success && (
             <Alert className="mb-6 bg-[#d1fae5] border-[#a7f3d0]">
-              <AlertDescription className="text-[#065f46]">{success}</AlertDescription>
+              <AlertDescription className="text-[#065f46]">
+                <span>
+                  {success} <Link
+                    to="/offers"
+                    className="inline underline text-[#5b21b6] hover:text-[#7c3aed]"
+                    style={{ display: 'inline !important' }}
+                  >
+                    View your offers
+                  </Link> to see and edit your offer.
+                </span>
+              </AlertDescription>
             </Alert>
           )}
 
@@ -181,7 +193,7 @@ function CreateOfferPage({ account }: CreateOfferPageProps) {
                 <SelectTrigger className="border-neutral-300 focus:ring-[#8b5cf6]">
                   <SelectValue placeholder="Select offer type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-neutral-100">
                   <SelectItem value="BUY">Buy USDC</SelectItem>
                   <SelectItem value="SELL">Sell USDC</SelectItem>
                 </SelectContent>
