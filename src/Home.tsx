@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Link } from "react-router-dom";
 import {
@@ -27,14 +27,38 @@ function OffersPage() {
   const [loading, setLoading] = useState(true);
   const [creatorNames, setCreatorNames] = useState<Record<number, string>>({});
   const [hasUsername, setHasUsername] = useState<boolean | null>(null);
+  const [tradeType, setTradeType] = useState<string>("BUY");
 
-  // Check if the current user has a username set
+  // Function to apply all active filters - memoized to prevent unnecessary recreations
+  const applyFilters = useCallback((currency: string = 'ALL') => {
+    let filtered = [...offers];
+
+    // Filter by trade type (BUY shows SELL offers, SELL shows BUY offers)
+    if (tradeType === "BUY") {
+      filtered = filtered.filter(offer => offer.offer_type === "SELL");
+    } else if (tradeType === "SELL") {
+      filtered = filtered.filter(offer => offer.offer_type === "BUY");
+    }
+
+    // Filter by currency
+    if (currency !== 'ALL') {
+      filtered = filtered.filter(offer => offer.fiat_currency === currency);
+    }
+
+    setFilteredOffers(filtered);
+  }, [offers, tradeType]);
+
+  // Apply filters whenever offers, currency, or trade type changes
   useEffect(() => {
-    setFilteredOffers(offers);
-  }, [offers]);
+    applyFilters();
+  }, [applyFilters]);
 
   const handleCurrencyChange = (currency: string) => {
-    setFilteredOffers(currency === 'ALL' ? offers : offers.filter(offer => offer.fiat_currency === currency));
+    applyFilters(currency);
+  };
+
+  const handleTradeTypeChange = (type: string) => {
+    setTradeType(type);
   };
 
   useEffect(() => {
@@ -190,7 +214,10 @@ function OffersPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="p-4">
-            <FilterBar onCurrencyChange={handleCurrencyChange} />
+            <FilterBar
+              onCurrencyChange={handleCurrencyChange}
+              onTradeTypeChange={handleTradeTypeChange}
+            />
           </div>
 
           {loading && (
