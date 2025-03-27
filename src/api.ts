@@ -65,6 +65,7 @@ export interface Offer {
   terms: string;
   escrow_deposit_time_limit: { minutes: number };
   fiat_payment_time_limit: { minutes: number };
+  fiat_currency: string;
   created_at: string;
   updated_at: string;
 }

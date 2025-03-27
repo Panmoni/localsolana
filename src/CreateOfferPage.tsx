@@ -52,6 +52,7 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
     terms: "Cash only",
     escrow_deposit_time_limit: "15 minutes",
     fiat_payment_time_limit: "30 minutes",
+    fiat_currency: "USD",
   });
   const [success, setSuccess] = useState("");
 
@@ -107,7 +108,8 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
         rate_adjustment: Number(formData.rate_adjustment),
         terms: formData.terms,
         escrow_deposit_time_limit: { minutes: 15 },
-        fiat_payment_time_limit: { minutes: 30 }
+        fiat_payment_time_limit: { minutes: 30 },
+        fiat_currency: formData.fiat_currency
       };
 
       const response = await createOffer(data);
@@ -125,6 +127,7 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
         terms: "Cash only",
         escrow_deposit_time_limit: "15 minutes",
         fiat_payment_time_limit: "30 minutes",
+        fiat_currency: "USD",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create offer");
@@ -278,6 +281,34 @@ function CreateOfferPage({ account: propAccount }: CreateOfferPageProps) {
               />
               <p className="text-xs text-neutral-500">
                 Total amount of USDC available for all trades from this offer
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="fiat_currency"
+                className="block text-sm font-medium text-neutral-700"
+              >
+                Fiat Currency
+              </label>
+              <Select
+                value={formData.fiat_currency}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, fiat_currency: value })
+                }
+              >
+                <SelectTrigger className="border-neutral-300 focus:ring-[#8b5cf6]">
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-100">
+                  <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                  <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                  <SelectItem value="VES">Venezuelan Bolivar (VES)</SelectItem>
+                  <SelectItem value="COP">Colombian Peso (COP)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-neutral-500">
+                Currency you want to trade in
               </p>
             </div>
 

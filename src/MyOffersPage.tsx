@@ -216,6 +216,9 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                         Rate
                       </TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">
+                        Currency
+                      </TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">
                         Created
                       </TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">
@@ -255,6 +258,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                             {formatRate(offer.rate_adjustment)}
                           </span>
                         </TableCell>
+                        <TableCell>{offer.fiat_currency}</TableCell>
                         <TableCell className="text-neutral-500 text-sm">
                           {formatDistanceToNow(new Date(offer.created_at))} ago
                         </TableCell>

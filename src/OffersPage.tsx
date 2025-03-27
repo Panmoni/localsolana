@@ -152,12 +152,14 @@ function OffersPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-neutral-50 hover:bg-neutral-50">
+                      <TableHead className="text-[#6d28d9] font-medium">ID</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Type</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Creator</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Min Amount</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Max Amount</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Available</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Rate</TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">Currency</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Updated</TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">Action</TableHead>
                     </TableRow>
@@ -165,6 +167,7 @@ function OffersPage() {
                   <TableBody>
                     {offers.map((offer) => (
                       <TableRow key={offer.id} className="hover:bg-neutral-50">
+                        <TableCell>#{offer.id}</TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             offer.offer_type === 'BUY'
@@ -191,8 +194,9 @@ function OffersPage() {
                           }>
                             {formatRate(offer.rate_adjustment)}
                           </span>
-                        </TableCell>
-                        <TableCell className="text-neutral-500 text-sm">
+                          </TableCell>
+                          <TableCell>{offer.fiat_currency}</TableCell>
+                          <TableCell className="text-neutral-500 text-sm">
                           {formatDistanceToNow(new Date(offer.updated_at))} ago
                         </TableCell>
                         <TableCell>
