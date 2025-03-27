@@ -35,8 +35,8 @@ const FilterBar = ({ onCurrencyChange, onTradeTypeChange }: FilterBarProps) => {
           </SelectTrigger>
           <SelectContent className="bg-neutral-100">
             <SelectItem value="ALL">All offers</SelectItem>
-            <SelectItem value="BUY">I am buying crypto</SelectItem>
-            <SelectItem value="SELL">I am selling crypto</SelectItem>
+            <SelectItem value="BUY">I am buying USDC</SelectItem>
+            <SelectItem value="SELL">I am selling USDC</SelectItem>
           </SelectContent>
         </Select>
       </div>
