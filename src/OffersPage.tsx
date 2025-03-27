@@ -190,12 +190,20 @@ function OffersPage() {
                           {formatDistanceToNow(new Date(offer.updated_at))} ago
                         </TableCell>
                         <TableCell>
-                          <Button
-                            onClick={() => startTrade(offer.id)}
-                            className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
-                          >
-                            Start Trade
-                          </Button>
+                          {primaryWallet ? (
+                            <Button
+                              onClick={() => startTrade(offer.id)}
+                              className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                            >
+                              Start Trade
+                            </Button>
+                          ) : (
+                            <Button
+                              className="bg-gray-400 hover:bg-gray-500 text-white border-none text-sm px-3 py-1 h-8 cursor-not-allowed"
+                            >
+                              Connect Wallet to Trade
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
