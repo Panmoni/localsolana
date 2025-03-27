@@ -81,8 +81,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
     }
   };
 
-  const formatRate = (rateStr: string) => {
-    const rate = parseFloat(rateStr);
+  const formatRate = (rate: number) => {
     if (rate > 1) return `+${((rate - 1) * 100).toFixed(1)}%`;
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(1)}%`;
     return "0%";
@@ -196,6 +195,9 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                   <TableHeader>
                     <TableRow className="bg-neutral-50 hover:bg-neutral-50">
                       <TableHead className="text-[#6d28d9] font-medium">
+                        ID
+                      </TableHead>
+                      <TableHead className="text-[#6d28d9] font-medium">
                         Type
                       </TableHead>
                       <TableHead className="text-[#6d28d9] font-medium">
@@ -224,6 +226,7 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                   <TableBody>
                     {myOffers.map((offer) => (
                       <TableRow key={offer.id} className="hover:bg-neutral-50">
+                        <TableCell>{offer.id}</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -242,9 +245,9 @@ function MyOffersPage({ account }: MyOffersPageProps) {
                         <TableCell>
                           <span
                             className={
-                              parseFloat(offer.rate_adjustment) > 1
+                              offer.rate_adjustment > 1
                                 ? "text-[#059669]"
-                                : parseFloat(offer.rate_adjustment) < 1
+                                : offer.rate_adjustment < 1
                                 ? "text-red-600"
                                 : "text-neutral-600"
                             }
