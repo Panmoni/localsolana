@@ -9,7 +9,7 @@ interface FilterBarProps {
 
 const FilterBar = ({ onCurrencyChange, onTradeTypeChange }: FilterBarProps) => {
   const [currency, setCurrency] = useState<string>("ALL");
-  const [tradeType, setTradeType] = useState<string>("BUY");
+  const [tradeType, setTradeType] = useState<string>("ALL");
 
   const handleCurrencyChange = (value: string) => {
     setCurrency(value);
@@ -34,8 +34,9 @@ const FilterBar = ({ onCurrencyChange, onTradeTypeChange }: FilterBarProps) => {
             <SelectValue placeholder="I want to..." />
           </SelectTrigger>
           <SelectContent className="bg-neutral-100">
-            <SelectItem value="BUY">I am buying USDC</SelectItem>
-            <SelectItem value="SELL">I am selling USDC</SelectItem>
+            <SelectItem value="ALL">All offers</SelectItem>
+            <SelectItem value="BUY">I am buying crypto</SelectItem>
+            <SelectItem value="SELL">I am selling crypto</SelectItem>
           </SelectContent>
         </Select>
       </div>

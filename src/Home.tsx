@@ -27,26 +27,28 @@ function OffersPage() {
   const [loading, setLoading] = useState(true);
   const [creatorNames, setCreatorNames] = useState<Record<number, string>>({});
   const [hasUsername, setHasUsername] = useState<boolean | null>(null);
-  const [tradeType, setTradeType] = useState<string>("BUY");
+  const [tradeType, setTradeType] = useState<string>("ALL");
+  const [currentCurrency, setCurrentCurrency] = useState<string>("ALL");
 
   // Function to apply all active filters - memoized to prevent unnecessary recreations
-  const applyFilters = useCallback((currency: string = 'ALL') => {
+  const applyFilters = useCallback(() => {
     let filtered = [...offers];
 
-    // Filter by trade type (BUY shows SELL offers, SELL shows BUY offers)
+    // Filter by trade type (BUY shows SELL offers, SELL shows BUY offers, ALL shows all)
     if (tradeType === "BUY") {
       filtered = filtered.filter(offer => offer.offer_type === "SELL");
     } else if (tradeType === "SELL") {
       filtered = filtered.filter(offer => offer.offer_type === "BUY");
     }
+    // If tradeType is "ALL", no filtering is applied
 
     // Filter by currency
-    if (currency !== 'ALL') {
-      filtered = filtered.filter(offer => offer.fiat_currency === currency);
+    if (currentCurrency !== 'ALL') {
+      filtered = filtered.filter(offer => offer.fiat_currency === currentCurrency);
     }
 
     setFilteredOffers(filtered);
-  }, [offers, tradeType]);
+  }, [offers, tradeType, currentCurrency]);
 
   // Apply filters whenever offers, currency, or trade type changes
   useEffect(() => {
@@ -54,11 +56,15 @@ function OffersPage() {
   }, [applyFilters]);
 
   const handleCurrencyChange = (currency: string) => {
-    applyFilters(currency);
+    setCurrentCurrency(currency);
+    // The applyFilters function will use the updated currentCurrency in the next render
+    applyFilters();
   };
 
   const handleTradeTypeChange = (type: string) => {
     setTradeType(type);
+    // The applyFilters function will use the current tradeType and currentCurrency in the next render
+    applyFilters();
   };
 
   useEffect(() => {
