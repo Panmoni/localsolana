@@ -20,7 +20,7 @@ interface HeaderProps {
 }
 
 function Header({ isLoggedIn, account }: HeaderProps) {
-  const { setShowAuthFlow } = useDynamicContext();
+  const { setShowAuthFlow, handleLogOut } = useDynamicContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -107,6 +107,14 @@ function Header({ isLoggedIn, account }: HeaderProps) {
                         My Escrows
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <button
+                        onClick={handleLogOut}
+                        className="w-full text-left text-gray-800 hover:text-purple-700"
+                      >
+                        Log Out
+                      </button>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
@@ -163,6 +171,14 @@ function Header({ isLoggedIn, account }: HeaderProps) {
                   >
                     My Escrows
                   </Link>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <button
+                    onClick={handleLogOut}
+                    className="block w-full py-2 text-left text-gray-800 hover:text-purple-700"
+                  >
+                    Log Out
+                  </button>
                 </div>
                 <div className="pt-2">
                   <DynamicWidget />
