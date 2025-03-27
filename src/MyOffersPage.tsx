@@ -43,9 +43,9 @@ function MyOffersPage({ account }: MyOffersPageProps) {
       try {
         // Get all offers and filter by the current user's account ID
         const response = await getOffers();
-        const userOffers = response.data.filter(
-          (offer: Offer) => offer.creator_account_id === account.id
-        );
+        const userOffers = response.data
+          .filter((offer: Offer) => offer.creator_account_id === account.id)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         setMyOffers(userOffers);
         setError(null);
       } catch (err) {

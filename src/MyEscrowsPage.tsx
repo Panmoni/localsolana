@@ -41,7 +41,11 @@ function MyEscrowsPage({ account }: MyEscrowsPageProps) {
       setLoading(true);
       try {
         const response = await getMyEscrows();
-        setMyEscrows(response.data);
+        setMyEscrows(
+          response.data.sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )
+        );
         setError(null);
       } catch (err) {
         const errorMessage =

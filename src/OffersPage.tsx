@@ -27,7 +27,11 @@ function OffersPage() {
       setLoading(true);
       try {
         const response = await getOffers();
-        setOffers(response.data);
+        setOffers(
+          response.data.sort(
+            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          )
+        );
 
         // Fetch creator usernames/wallet addresses
         const uniqueCreatorIds = [...new Set(response.data.map((o: Offer) => o.creator_account_id))];

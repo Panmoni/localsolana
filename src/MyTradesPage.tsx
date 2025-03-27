@@ -30,7 +30,11 @@ function MyTradesPage({ account }: MyTradesPageProps) {
       setLoading(true);
       try {
         const response = await getMyTrades();
-        setMyTrades(response.data);
+        setMyTrades(
+          response.data.sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )
+        );
         setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error";
