@@ -139,6 +139,24 @@ export interface Escrow {
   updated_at: string;
 }
 
+export interface PriceData {
+  price: string;
+  timestamp: number;
+}
+
+export interface PricesResponse {
+  status: string;
+  data: {
+    USDC: {
+      USD: PriceData;
+      COP: PriceData;
+      EUR: PriceData;
+      NGN: PriceData;
+      VES: PriceData;
+    };
+  };
+}
+
 export interface Dispute {
   id: number;
   trade_id: number;
@@ -261,5 +279,8 @@ export const markTradeFiatPaid = (tradeId: number) => {
     trade_id: tradeId
   });
 };
+
+export const getPrices = () =>
+  api.get<PricesResponse>("/prices");
 
 export default api;
