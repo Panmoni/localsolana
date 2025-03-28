@@ -207,28 +207,32 @@ function OffersPage() {
     setIsDialogOpen(true);
   };
 
-  const startTrade = async (offerId: number) => {
+  const startTrade = async (offerId: number, amount: string = "1000000") => {
     try {
+      const offer = offers.find((o) => o.id === offerId);
+      if (!offer) {
+        throw new Error("Offer not found");
+      }
+
       const tradeData = {
         leg1_offer_id: offerId,
-        leg1_crypto_amount: "1000000", // Using string as API expects
-        from_fiat_currency: "USD",
-        destination_fiat_currency: "USD",
+        leg1_crypto_amount: amount, // Now using the amount from the form
+        from_fiat_currency: offer.fiat_currency,
+        destination_fiat_currency: offer.fiat_currency,
       };
       const tradeResponse = await createTrade(tradeData);
       const tradeId = tradeResponse.data.id;
 
       if (primaryWallet) {
         const seller = primaryWallet.address;
-        const offer = offers.find((o) => o.id === offerId);
-        const buyer = offer ? String(offer.creator_account_id) : seller; // Convert to string
+        const buyer = String(offer.creator_account_id); // Convert to string
 
         const escrowData = {
           trade_id: tradeId,
           escrow_id: Math.floor(Math.random() * 1000000),
           seller,
           buyer,
-          amount: 1000000,
+          amount: parseInt(amount), // Convert string amount to number
         };
 
         const escrowResponse = await createEscrow(escrowData);
@@ -411,7 +415,7 @@ function OffersPage() {
                             <TradeConfirmationDialog
                               isOpen={isDialogOpen && selectedOfferId === offer.id}
                               onOpenChange={(open) => !open && setIsDialogOpen(false)}
-                              offerId={offer.id}
+                              offer={offer}
                               onConfirm={startTrade}
                               triggerButton={
                                 <Button
@@ -513,7 +517,7 @@ function OffersPage() {
                                 <TradeConfirmationDialog
                                   isOpen={isDialogOpen && selectedOfferId === offer.id}
                                   onOpenChange={(open) => !open && setIsDialogOpen(false)}
-                                  offerId={offer.id}
+                                  offer={offer}
                                   onConfirm={startTrade}
                                   triggerButton={
                                     <Button
