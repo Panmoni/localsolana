@@ -38,8 +38,8 @@ import {
 } from "@/components/ui/pagination";
 import { formatDistanceToNow } from "date-fns";
 import FilterBar from "@/components/FilterBar";
-import IntroMessageNotLoggedIn from "./IntroMessageNotLoggedIn";
-import NoOffers from "./NoOffers";
+import IntroMessageNotLoggedIn from "./components/IntroMessageNotLoggedIn";
+import NoOffers from "./components/NoOffers";
 
 function OffersPage() {
   const { primaryWallet } = useDynamicContext();

@@ -31,9 +31,7 @@ const IntroMessageNotLoggedIn = () => {
               Welcome to LocalSolana P2P Trading
             </h2>
             <p className="text-neutral-600 mb-4 text-sm sm:text-base">
-              Connect your wallet to start trading USDC on Solana directly with other
-              users. Buy and sell using any preferred fiat payment method with
-              our on-chain escrow system. Get <a href="https://faucet.solana.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet SOL</a> and <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet USDC</a> to get started. Support is available in <a href="https://t.me/Panmoni/802" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">English</a> and <a href="https://t.me/Panmoni/804" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">Español</a>.
+              Trade USDC on Solana directly with other users anywhere in the world. Buy and sell using any fiat payment method with our on-chain escrow system. Get <a href="https://faucet.solana.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet SOL</a> and <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">devnet USDC</a> to test LocalSolana. Get support in <a href="https://t.me/Panmoni/802" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">English</a> or <a href="https://t.me/Panmoni/804" target="_blank" rel="noopener noreferrer" className="text-[#6d28d9] underline">Español</a>.
             </p>
             <Button
               onClick={() => setShowAuthFlow(true)}
