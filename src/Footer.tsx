@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
                   loading="lazy"
                 />
                 <StatusBadge />
-                <h4 className="font-black text-purple-800 mb-4 sm:mb-6">LocalSolana</h4>
+                <h4 className="font-black text-purple-800 mb-2 sm:mb-4">LocalSolana</h4>
               </Link>
               <p className="text-sm">Buy and sell USDC on Solana P2P anywhere, anyhow</p>
             </div>
@@ -90,9 +90,9 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="footer-bottom">
-          <p className="mb-2">The best place for discussion and support is our <a href="https://t.me/Panmoni/802" target='_blank' rel="noopener noreferrer">Telegram</a> group.</p>
-          <p className="mb-2">También hay soporte en Español en <a href="https://t.me/Panmoni/804" target='_blank' rel="noopener noreferrer">Telegram</a>.</p>
-          <p className="mb-2">&copy; {new Date().getFullYear()} A <a className="panmoni-link" href="https://panmoni.com" target='_blank' rel="noopener noreferrer">Panmoni</a> project</p>
+          <p className="mb-2">We welcome you for discussion and support in our <a href="https://t.me/Panmoni/802" target='_blank' rel="noopener noreferrer">Telegram</a> group.</p>
+          <p className="mb-4">Te damos la bienvenida para soporte en Español en <a href="https://t.me/Panmoni/804" target='_blank' rel="noopener noreferrer">Telegram</a>.</p>
+          <p>&copy; {new Date().getFullYear()} A <a className="panmoni-link" href="https://panmoni.com" target='_blank' rel="noopener noreferrer">Panmoni</a> project</p>
         </div>
       </Container>
     </footer>
