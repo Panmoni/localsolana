@@ -109,7 +109,7 @@ function EditOfferPage() {
 
   // Helper function to convert rate factor to percentage for display
   const rateToPercentage = (rate: number) => {
-    return ((rate - 1) * 100).toFixed(1);
+    return ((rate - 1) * 100).toFixed(2);
   };
 
   if (loading) {
@@ -245,7 +245,7 @@ function EditOfferPage() {
                     name="rate_adjustment"
                     value={rateToPercentage(formData.rate_adjustment || 1)}
                     onChange={handleChange}
-                    step="0.1"
+                    step="0.01"
                     required
                   />
                   <p className="text-xs text-neutral-500 mt-1">
