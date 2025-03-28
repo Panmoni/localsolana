@@ -86,8 +86,8 @@ function MyOffersPage({ account }: MyOffersPageProps) {
   };
 
   const formatRate = (rate: number) => {
-    if (rate > 1) return `+${((rate - 1) * 100).toFixed(1)}%`;
-    if (rate < 1) return `-${((1 - rate) * 100).toFixed(1)}%`;
+    if (rate > 1) return `+${((rate - 1) * 100).toFixed(2)}%`;
+    if (rate < 1) return `-${((1 - rate) * 100).toFixed(2)}%`;
     return "0%";
   };
 if (!primaryWallet) {
