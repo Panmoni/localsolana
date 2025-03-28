@@ -33,6 +33,7 @@ const TradeConfirmationDialog = ({
   const [priceData, setPriceData] = useState<PricesResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [amountError, setAmountError] = useState<string | null>(null);
   const [fiatAmount, setFiatAmount] = useState<number>(0);
   const [platformFee, setPlatformFee] = useState<number>(0);
 
@@ -128,6 +129,7 @@ const TradeConfirmationDialog = ({
       setFiatAmount(0);
       setPlatformFee(0);
       setError(null);
+      setAmountError(null);
     }
     // Note: We don't set the amount here anymore
   }, [isOpen]);
@@ -160,6 +162,7 @@ const TradeConfirmationDialog = ({
     // Allow empty input for user to clear and type a new value
     if (value === "") {
       setAmount(value);
+      setAmountError(null);
       return;
     }
 
@@ -171,6 +174,20 @@ const TradeConfirmationDialog = ({
 
     // Update the amount state
     setAmount(value);
+
+    // Validate against min/max/total limits
+    const numAmount = parseFloat(value);
+    if (!isNaN(numAmount)) {
+      if (numAmount < offer.min_amount) {
+        setAmountError(`Amount must be at least ${formatNumber(offer.min_amount)} ${offer.token}`);
+      } else if (numAmount > offer.max_amount) {
+        setAmountError(`Amount cannot exceed ${formatNumber(offer.max_amount)} ${offer.token}`);
+      } else if (numAmount > offer.total_available_amount) {
+        setAmountError(`Amount exceeds available amount of ${formatNumber(offer.total_available_amount)} ${offer.token}`);
+      } else {
+        setAmountError(null);
+      }
+    }
   };
 
   const handleConfirm = () => {
@@ -273,7 +290,7 @@ const TradeConfirmationDialog = ({
                 value={amount}
                 onChange={handleAmountChange}
                 placeholder={`Enter amount (${offer.min_amount} - ${offer.max_amount})`}
-                className="bg-neutral-100"
+                className={`bg-neutral-100 ${amountError ? 'border-red-500 focus:ring-red-500' : ''}`}
                 readOnly={false}
                 autoFocus
                 min={offer.min_amount}
@@ -287,6 +304,11 @@ const TradeConfirmationDialog = ({
               Min: {formatNumber(offer.min_amount)} |
               Max: {formatNumber(offer.max_amount)}
             </div>
+            {amountError && (
+              <div className="text-xs text-red-600 mt-1">
+                {amountError}
+              </div>
+            )}
           </div>
 
           {/* Calculated Values */}
@@ -401,7 +423,7 @@ const TradeConfirmationDialog = ({
           <Button
             className="bg-[#10b981] hover:bg-[#059669] text-white"
             onClick={handleConfirm}
-            disabled={loading || !!error || fiatAmount <= 0}
+            disabled={loading || !!error || !!amountError || fiatAmount <= 0}
           >
             Initiate Trade
           </Button>
