@@ -7,13 +7,15 @@ import {
   createEscrow,
   Offer,
   getAccountById,
-  getAccount
+  getAccount,
+  deleteOffer
 } from "./api";
 import { formatNumber } from "./lib/utils";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import OfferActionButtons from "./components/OfferActionButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -40,6 +42,8 @@ function OffersPage() {
   const [hasUsername, setHasUsername] = useState<boolean | null>(null);
   const [tradeType, setTradeType] = useState<string>("ALL");
   const [currentCurrency, setCurrentCurrency] = useState<string>("ALL");
+  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const [currentUserAccountId, setCurrentUserAccountId] = useState<number | null>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -103,6 +107,27 @@ function OffersPage() {
     applyFilters();
   };
 
+  const handleDeleteOffer = async (offerId: number) => {
+    if (!window.confirm("Are you sure you want to delete this offer?")) {
+      return;
+    }
+
+    try {
+      await deleteOffer(offerId);
+      setOffers(offers.filter((offer) => offer.id !== offerId));
+      setFilteredOffers(filteredOffers.filter((offer) => offer.id !== offerId));
+      setDeleteSuccess("Offer deleted successfully");
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setDeleteSuccess(null);
+      }, 3000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      setError(`Failed to delete offer: ${errorMessage}`);
+    }
+  };
+
   useEffect(() => {
     const checkUsername = async () => {
       if (primaryWallet) {
@@ -112,6 +137,11 @@ function OffersPage() {
           const hasUsername = !!accountResponse.data.username;
           console.log("[OffersPage] User has username:", hasUsername, "Username:", accountResponse.data.username);
           setHasUsername(hasUsername);
+
+          // Store the current user's account ID
+          if (accountResponse.data.id) {
+            setCurrentUserAccountId(accountResponse.data.id);
+          }
         } catch (err) {
           console.error("[OffersPage] Failed to fetch user account:", err);
 
@@ -128,6 +158,7 @@ function OffersPage() {
         }
       } else {
         console.log("[OffersPage] No wallet connected");
+        setCurrentUserAccountId(null);
       }
     };
     checkUsername();
@@ -267,14 +298,23 @@ function OffersPage() {
               <p className="text-neutral-500">Loading available offers...</p>
             </div>
           )}
+{error && (
+  <div className="p-5">
+    <Alert variant="destructive" className="mb-0 border-none bg-red-50">
+      <AlertDescription className="text-red-700">{error}</AlertDescription>
+    </Alert>
+  </div>
+)}
 
-          {error && (
-            <div className="p-5">
-              <Alert variant="destructive" className="mb-0 border-none bg-red-50">
-                <AlertDescription className="text-red-700">{error}</AlertDescription>
-              </Alert>
-            </div>
-          )}
+{deleteSuccess && (
+  <div className="p-5">
+    <Alert className="mb-0 bg-[#d1fae5] border-[#a7f3d0]">
+      <AlertDescription className="text-[#065f46]">
+        {deleteSuccess}
+      </AlertDescription>
+    </Alert>
+  </div>
+)}
 
           {!loading && !error && filteredOffers.length === 0 ? (
             <NoOffers />
@@ -354,12 +394,20 @@ function OffersPage() {
 
                       <div className="mt-4">
                         {primaryWallet ? (
-                          <Button
-                            onClick={() => startTrade(offer.id)}
-                            className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
-                          >
-                            Start Trade
-                          </Button>
+                          currentUserAccountId === offer.creator_account_id ? (
+                            <OfferActionButtons
+                              offerId={offer.id}
+                              onDelete={handleDeleteOffer}
+                              isMobile={true}
+                            />
+                          ) : (
+                            <Button
+                              onClick={() => startTrade(offer.id)}
+                              className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
+                            >
+                              Start Trade
+                            </Button>
+                          )
                         ) : (
                           <Button
                             className="bg-gray-400 hover:bg-gray-500 text-white w-full cursor-not-allowed"
@@ -441,12 +489,19 @@ function OffersPage() {
                           </TableCell>
                           <TableCell>
                             {primaryWallet ? (
-                              <Button
-                                onClick={() => startTrade(offer.id)}
-                                className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
-                              >
-                                Start Trade
-                              </Button>
+                              currentUserAccountId === offer.creator_account_id ? (
+                                <OfferActionButtons
+                                  offerId={offer.id}
+                                  onDelete={handleDeleteOffer}
+                                />
+                              ) : (
+                                <Button
+                                  onClick={() => startTrade(offer.id)}
+                                  className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                                >
+                                  Start Trade
+                                </Button>
+                              )
                             ) : (
                               <Button
                                 className="bg-gray-400 hover:bg-gray-500 text-white border-none text-sm px-3 py-1 h-8 cursor-not-allowed"
