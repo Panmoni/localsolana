@@ -223,23 +223,46 @@ export const markFiatPaid = (id: number) =>
   api.put<{ id: number }>(`/trades/${id}`, { fiat_paid: true });
 
 // Escrows API
+/**
+ * Creates an escrow for a trade
+ * @param data Object containing escrow creation parameters
+ * @param data.trade_id Trade ID (must be an integer)
+ * @param data.escrow_id Escrow ID (must be an integer)
+ * @param data.seller Seller's wallet address
+ * @param data.buyer Buyer's wallet address
+ * @param data.amount Crypto amount (supports decimal values, e.g. 22.22)
+ * @param data.sequential Optional: Whether this is a sequential escrow
+ * @param data.sequential_escrow_address Optional: Address of the sequential escrow
+ * @returns Promise with escrow creation response
+ */
 export const createEscrow = (data: {
   trade_id: number;
   escrow_id: number;
   seller: string;
   buyer: string;
-  amount: number;
+  amount: number; // Now supports decimal values (e.g., 22.22)
   sequential?: boolean;
   sequential_escrow_address?: string;
 }) => api.post<EscrowResponse>("/escrows/create", data);
 
+/**
+ * Funds an existing escrow
+ * @param data Object containing escrow funding parameters
+ * @param data.escrow_id Escrow ID (must be an integer)
+ * @param data.trade_id Trade ID (must be an integer)
+ * @param data.seller Seller's wallet address
+ * @param data.seller_token_account Seller's token account
+ * @param data.token_mint Token mint address
+ * @param data.amount Crypto amount (supports decimal values, e.g. 22.22)
+ * @returns Promise with escrow funding response
+ */
 export const fundEscrow = (data: {
   escrow_id: number;
   trade_id: number;
   seller: string;
   seller_token_account: string;
   token_mint: string;
-  amount: number;
+  amount: number; // Now supports decimal values (e.g., 22.22)
 }) => api.post<EscrowResponse>("/escrows/fund", data);
 
 export const getEscrow = (tradeId: number) =>
@@ -248,26 +271,57 @@ export const getEscrow = (tradeId: number) =>
 export const getMyEscrows = () =>
   api.get<Escrow[]>("/my/escrows");
 
+/**
+ * Releases funds from an escrow to the buyer
+ * @param data Object containing escrow release parameters
+ * @param data.escrow_id Escrow ID (must be an integer)
+ * @param data.trade_id Trade ID (must be an integer)
+ * @param data.authority Authority's wallet address
+ * @param data.buyer_token_account Buyer's token account
+ * @param data.arbitrator_token_account Arbitrator's token account
+ * @param data.sequential_escrow_token_account Optional: Sequential escrow token account
+ * @returns Promise with escrow release response
+ */
 export const releaseEscrow = (data: {
-  escrow_id: number;
-  trade_id: number;
+  escrow_id: number; // Must be an integer
+  trade_id: number; // Must be an integer
   authority: string;
   buyer_token_account: string;
   arbitrator_token_account: string;
   sequential_escrow_token_account?: string;
 }) => api.post<EscrowResponse>("/escrows/release", data);
 
+/**
+ * Cancels an escrow and returns funds to the seller
+ * @param data Object containing escrow cancellation parameters
+ * @param data.escrow_id Escrow ID (must be an integer)
+ * @param data.trade_id Trade ID (must be an integer)
+ * @param data.seller Seller's wallet address
+ * @param data.authority Authority's wallet address
+ * @param data.seller_token_account Optional: Seller's token account
+ * @returns Promise with escrow cancellation response
+ */
 export const cancelEscrow = (data: {
-  escrow_id: number;
-  trade_id: number;
+  escrow_id: number; // Must be an integer
+  trade_id: number; // Must be an integer
   seller: string;
   authority: string;
   seller_token_account?: string;
 }) => api.post<EscrowResponse>("/escrows/cancel", data);
 
+/**
+ * Initiates a dispute for an escrow
+ * @param data Object containing escrow dispute parameters
+ * @param data.escrow_id Escrow ID (must be an integer)
+ * @param data.trade_id Trade ID (must be an integer)
+ * @param data.disputing_party Disputing party's wallet address
+ * @param data.disputing_party_token_account Disputing party's token account
+ * @param data.evidence_hash Optional: Hash of evidence
+ * @returns Promise with escrow dispute response
+ */
 export const disputeEscrow = (data: {
-  escrow_id: number;
-  trade_id: number;
+  escrow_id: number; // Must be an integer
+  trade_id: number; // Must be an integer
   disputing_party: string;
   disputing_party_token_account: string;
   evidence_hash?: string;

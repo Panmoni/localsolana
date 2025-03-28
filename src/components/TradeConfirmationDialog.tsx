@@ -214,8 +214,8 @@ const TradeConfirmationDialog = ({
       return;
     }
 
-    // Convert to the format expected by the API (string with proper precision)
-    const formattedAmount = (numAmount * 1000000).toString(); // Convert to USDC's 6 decimal places
+    // Pass the amount as a decimal string directly
+    const formattedAmount = numAmount.toString();
     onConfirm(offer.id, formattedAmount);
   };
 

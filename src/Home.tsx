@@ -232,7 +232,7 @@ function OffersPage() {
           escrow_id: Math.floor(Math.random() * 1000000),
           seller,
           buyer,
-          amount: parseInt(amount), // Convert string amount to number
+          amount: parseFloat(amount), // Convert string amount to float to preserve decimal places
         };
 
         const escrowResponse = await createEscrow(escrowData);
