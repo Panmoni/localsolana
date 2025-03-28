@@ -267,12 +267,22 @@ return (
                       </div>
 
                       <div className="mt-4 flex gap-2">
-                        <Button
-                          variant="outline"
-                          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] flex-1"
-                        >
-                          Edit
-                        </Button>
+                        <Link to={`/offer/${offer.id}`} className="flex-1">
+                          <Button
+                            variant="outline"
+                            className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
+                          >
+                            View
+                          </Button>
+                        </Link>
+                        <Link to={`/edit-offer/${offer.id}`} className="flex-1">
+                          <Button
+                            variant="outline"
+                            className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
+                          >
+                            Edit
+                          </Button>
+                        </Link>
                         <Button
                           variant="outline"
                           onClick={() => handleDeleteOffer(offer.id)}
@@ -375,12 +385,24 @@ return (
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
-                              >
-                                Edit
-                              </Button>
+                              <div className="flex gap-2">
+                                <Link to={`/offer/${offer.id}`}>
+                                  <Button
+                                    variant="outline"
+                                    className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
+                                  >
+                                    View
+                                  </Button>
+                                </Link>
+                                <Link to={`/edit-offer/${offer.id}`}>
+                                  <Button
+                                    variant="outline"
+                                    className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </div>
                               <Button
                                 variant="outline"
                                 onClick={() => handleDeleteOffer(offer.id)}
