@@ -120,10 +120,6 @@ function OffersPage() {
   };
 
   const handleDeleteOffer = async (offerId: number) => {
-    if (!window.confirm("Are you sure you want to delete this offer?")) {
-      return;
-    }
-
     try {
       await deleteOffer(offerId);
       setOffers(offers.filter((offer) => offer.id !== offerId));
