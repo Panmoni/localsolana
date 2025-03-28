@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { formatNumber } from "./lib/utils";
 import { useDynamicContext, DynamicWidget, getAuthToken } from "@dynamic-labs/sdk-react-core";
-import { Account } from "./api";
-import { setAuthToken } from "./api";
+import { Account, setAuthToken, getPrices } from "./api";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -23,6 +24,24 @@ function Header({ isLoggedIn, account }: HeaderProps) {
   const { setShowAuthFlow, handleLogOut } = useDynamicContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [prices, setPrices] = useState<Record<string, {price: string, timestamp: number}> | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
+
+  const fetchPrices = useCallback(async () => {
+    try {
+      const response = await getPrices();
+      setPrices(response.data.data.USDC);
+      setPriceError(null);
+    } catch (err) {
+      setPriceError(err instanceof Error ? err.message : 'Unknown error');
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 60000);
+    return () => clearInterval(interval);
+  }, [fetchPrices]);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -47,6 +66,43 @@ function Header({ isLoggedIn, account }: HeaderProps) {
             <h1 className="font-black">LocalSolana</h1>
             <StatusBadge />
           </Link>
+
+          {priceError ? (
+            <div className="hidden md:flex items-center text-red-500 text-sm">
+              Price data unavailable
+            </div>
+          ) : prices ? (
+            <div className="hidden md:flex items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center">
+                    {Object.entries(prices).map(([currency, priceData]) => (
+                      <div key={currency} className="flex flex-col items-center mx-2">
+                        <span className="text-xs text-gray-500">{currency}</span>
+                        <span className="text-sm font-medium text-purple-700">
+                          {formatNumber(priceData.price)}
+                        </span>
+                      </div>
+                    ))}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-neutral-100 text-gray-800 p-2 rounded-md shadow-lg">
+                  USDC market prices update every 15 minutes
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-4">
+              {['USD', 'COP', 'EUR', 'NGN', 'VES'].map((currency) => (
+                <div key={currency} className="flex flex-col items-center">
+                  <span className="text-xs text-gray-500">{currency}</span>
+                  <span className="text-sm font-medium text-purple-700">
+                    ...
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Mobile menu button */}
           <button
