@@ -17,6 +17,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
 import OfferTypeTooltip from "./components/OfferTypeTooltip";
+import OfferDescription from "./components/OfferDescription";
 
 function OfferDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -179,6 +180,9 @@ function OfferDetailPage() {
               <CardDescription>
                 Created {formatDistanceToNow(new Date(offer.created_at))} ago by {creator.username || creator.wallet_address}
               </CardDescription>
+              <div className="mt-4">
+                <OfferDescription offer={offer} />
+              </div>
             </div>
             <div className="flex gap-2">
               <Link to="/offers">
@@ -197,29 +201,29 @@ function OfferDetailPage() {
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Type</span>
                 <OfferTypeTooltip offerType={offer.offer_type} />
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Token</span>
                 <span>{offer.token}</span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Amount Range</span>
                 <span>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)} {offer.token}</span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Available Amount</span>
                 <span>{formatNumber(offer.total_available_amount)} {offer.token}</span>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Rate Adjustment</span>
                 <span className={
                   offer.rate_adjustment > 1
@@ -232,17 +236,17 @@ function OfferDetailPage() {
                 </span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Fiat Currency</span>
                 <span>{offer.fiat_currency}</span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Escrow Deposit Time Limit</span>
                 <span>{formatNumber(offer.escrow_deposit_time_limit.minutes)} minutes</span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
+              <div className="flex justify-between items-center p-4">
                 <span className="font-medium text-neutral-700">Fiat Payment Time Limit</span>
                 <span>{formatNumber(offer.fiat_payment_time_limit.minutes)} minutes</span>
               </div>
@@ -251,7 +255,7 @@ function OfferDetailPage() {
 
           <div className="mt-6">
             <h3 className="font-medium text-neutral-700 mb-2">Terms and Conditions</h3>
-            <div className="p-4 bg-neutral-50 rounded-lg whitespace-pre-wrap">
+            <div className="p-4 whitespace-pre-wrap">
               {offer.terms || "No terms specified"}
             </div>
           </div>

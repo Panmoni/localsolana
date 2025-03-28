@@ -12,15 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Container from "./components/Container";
-import { CurrencyOptions } from "./lib/currencyOptions";
+import OfferDescription from "./components/OfferDescription";
 
 function EditOfferPage() {
   const { id } = useParams<{ id: string }>();
@@ -92,18 +85,7 @@ function EditOfferPage() {
     }
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleTimeChange = (name: string, value: string) => {
-    const minutes = parseInt(value) || 60;
-    if (name === "escrow_deposit_time_limit") {
-      setFormData({ ...formData, escrow_deposit_time_limit: { minutes } });
-    } else if (name === "fiat_payment_time_limit") {
-      setFormData({ ...formData, fiat_payment_time_limit: { minutes } });
-    }
-  };
+  // These functions have been removed as the fields are now non-editable
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,8 +132,13 @@ function EditOfferPage() {
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <CardTitle className="text-[#5b21b6] font-semibold">Edit Offer</CardTitle>
+              <CardTitle className="text-[#5b21b6] font-semibold">Edit Offer #{id}</CardTitle>
               <CardDescription>Update your offer details</CardDescription>
+              {!loading && formData && (
+                <div className="mt-4">
+                  <OfferDescription offer={formData as Offer} />
+                </div>
+              )}
             </div>
             <Link to={`/offer/${id}`}>
               <Button variant="outline">Cancel</Button>
@@ -178,36 +165,28 @@ function EditOfferPage() {
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Offer Type
                   </label>
-                  <Select
-                    value={formData.offer_type}
-                    onValueChange={(value) => handleSelectChange("offer_type", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select offer type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-neutral-100">
-                      <SelectItem value="BUY">BUY (You want to buy crypto)</SelectItem>
-                      <SelectItem value="SELL">SELL (You want to sell crypto)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    value={formData.offer_type === "BUY" ? "BUY (You want to buy crypto)" : "SELL (You want to sell crypto)"}
+                    className="bg-neutral-50"
+                    disabled
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Offer type cannot be changed
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Token
                   </label>
-                  <Select
+                  <Input
                     value={formData.token}
-                    onValueChange={(value) => handleSelectChange("token", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select token" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-neutral-100">
-                      <SelectItem value="USDC">USDC</SelectItem>
-                      <SelectItem value="SOL">SOL</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    className="bg-neutral-50"
+                    disabled
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Token cannot be changed
+                  </p>
                 </div>
 
                 <div>
@@ -278,17 +257,14 @@ function EditOfferPage() {
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Fiat Currency
                   </label>
-                  <Select
+                  <Input
                     value={formData.fiat_currency}
-                    onValueChange={(value) => handleSelectChange("fiat_currency", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-neutral-100">
-                      <CurrencyOptions />
-                    </SelectContent>
-                  </Select>
+                    className="bg-neutral-50"
+                    disabled
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Fiat currency cannot be changed
+                  </p>
                 </div>
 
                 <div>
@@ -298,10 +274,12 @@ function EditOfferPage() {
                   <Input
                     type="number"
                     value={formData.escrow_deposit_time_limit?.minutes || 60}
-                    onChange={(e) => handleTimeChange("escrow_deposit_time_limit", e.target.value)}
-                    min="10"
-                    required
+                    className="bg-neutral-50"
+                    disabled
                   />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Escrow deposit time limit cannot be changed
+                  </p>
                 </div>
 
                 <div>
@@ -311,10 +289,12 @@ function EditOfferPage() {
                   <Input
                     type="number"
                     value={formData.fiat_payment_time_limit?.minutes || 60}
-                    onChange={(e) => handleTimeChange("fiat_payment_time_limit", e.target.value)}
-                    min="10"
-                    required
+                    className="bg-neutral-50"
+                    disabled
                   />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Fiat payment time limit cannot be changed
+                  </p>
                 </div>
               </div>
             </div>
