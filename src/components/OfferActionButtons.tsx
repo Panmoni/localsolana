@@ -31,7 +31,7 @@ function OfferActionButtons({ offerId, onDelete, isMobile = false }: OfferAction
 
   return (
     <>
-      <div className={`flex gap-2 ${isMobile ? "mt-4" : ""}`}>
+      <div className={`flex gap-2 justify-center ${isMobile ? "mt-4" : ""}`}>
         <Link to={`/offer/${offerId}`} className={isMobile ? "flex-1" : ""}>
           <Button
             variant="outline"
