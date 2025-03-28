@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getOfferById, getAccountById, createTrade, deleteOffer, Offer, Account, getAccount } from "./api";
+import { formatNumber } from "./lib/utils";
 import {
   Card,
   CardContent,
@@ -164,7 +165,7 @@ function OfferDetailPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <CardTitle className="text-[#5b21b6] font-semibold">
-                Offer #{offer.id}
+                Offer #{formatNumber(offer.id)}
               </CardTitle>
               <CardDescription>
                 Created {formatDistanceToNow(new Date(offer.created_at))} ago by {creator.username || creator.wallet_address}
@@ -205,12 +206,12 @@ function OfferDetailPage() {
 
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
                 <span className="font-medium text-neutral-700">Amount Range</span>
-                <span>{offer.min_amount} - {offer.max_amount} {offer.token}</span>
+                <span>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)} {offer.token}</span>
               </div>
 
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
                 <span className="font-medium text-neutral-700">Available Amount</span>
-                <span>{offer.total_available_amount} {offer.token}</span>
+                <span>{formatNumber(offer.total_available_amount)} {offer.token}</span>
               </div>
             </div>
 
@@ -235,12 +236,12 @@ function OfferDetailPage() {
 
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
                 <span className="font-medium text-neutral-700">Escrow Deposit Time Limit</span>
-                <span>{offer.escrow_deposit_time_limit.minutes} minutes</span>
+                <span>{formatNumber(offer.escrow_deposit_time_limit.minutes)} minutes</span>
               </div>
 
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
                 <span className="font-medium text-neutral-700">Fiat Payment Time Limit</span>
-                <span>{offer.fiat_payment_time_limit.minutes} minutes</span>
+                <span>{formatNumber(offer.fiat_payment_time_limit.minutes)} minutes</span>
               </div>
             </div>
           </div>

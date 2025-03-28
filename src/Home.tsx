@@ -9,6 +9,7 @@ import {
   getAccountById,
   getAccount
 } from "./api";
+import { formatNumber } from "./lib/utils";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -197,9 +198,9 @@ function OffersPage() {
         const escrowResponse = await createEscrow(escrowData);
         console.log("[OffersPage] Escrow instruction generated:", escrowResponse.data);
 
-        alert(`Trade ${tradeId} started successfully`);
+        alert(`Trade ${formatNumber(tradeId)} started successfully`);
       } else {
-        alert(`Trade ${tradeId} started, but no wallet connected`);
+        alert(`Trade ${formatNumber(tradeId)} started, but no wallet connected`);
       }
     } catch (err) {
       console.error("[OffersPage] Trade failed:", err);
@@ -285,7 +286,7 @@ function OffersPage() {
                   {filteredOffers.map((offer) => (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
-                        <span>{offer.id}</span>
+                        <span>{formatNumber(offer.id)}</span>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -318,12 +319,12 @@ function OffersPage() {
 
                       <div className="mobile-card-view-row">
                         <span className="mobile-card-view-label">Amount</span>
-                        <span>{offer.min_amount} - {offer.max_amount} {offer.token}</span>
+                        <span>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)} {offer.token}</span>
                       </div>
 
                       <div className="mobile-card-view-row">
                         <span className="mobile-card-view-label">Available</span>
-                        <span>{offer.total_available_amount} {offer.token}</span>
+                        <span>{formatNumber(offer.total_available_amount)} {offer.token}</span>
                       </div>
 
                       <div className="mobile-card-view-row">
@@ -391,7 +392,7 @@ function OffersPage() {
                     <TableBody>
                       {filteredOffers.map((offer) => (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
-                          <TableCell>{offer.id}</TableCell>
+                          <TableCell>{formatNumber(offer.id)}</TableCell>
                           <TableCell>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -420,9 +421,9 @@ function OffersPage() {
                             {creatorNames[offer.creator_account_id] ||
                              abbreviateWallet(String(offer.creator_account_id))}
                           </TableCell>
-                          <TableCell>{offer.min_amount} {offer.token}</TableCell>
-                          <TableCell>{offer.max_amount} {offer.token}</TableCell>
-                          <TableCell>{offer.total_available_amount} {offer.token}</TableCell>
+                          <TableCell>{formatNumber(offer.min_amount)} {offer.token}</TableCell>
+                          <TableCell>{formatNumber(offer.max_amount)} {offer.token}</TableCell>
+                          <TableCell>{formatNumber(offer.total_available_amount)} {offer.token}</TableCell>
                           <TableCell>
                             <span className={
                               offer.rate_adjustment > 1

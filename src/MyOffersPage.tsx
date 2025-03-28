@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Link } from "react-router-dom";
 import { getOffers, deleteOffer, Offer, Account } from "./api";
+import { formatNumber } from "./lib/utils";
 import {
   Table,
   TableBody,
@@ -201,7 +202,7 @@ return (
                   {myOffers.map((offer) => (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
-                        <span>{offer.id}</span>
+                        <span>{formatNumber(offer.id)}</span>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -233,12 +234,12 @@ return (
 
                       <div className="mobile-card-view-row">
                         <span className="mobile-card-view-label">Amount Range</span>
-                        <span>{offer.min_amount} - {offer.max_amount}</span>
+                        <span>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)}</span>
                       </div>
 
                       <div className="mobile-card-view-row">
                         <span className="mobile-card-view-label">Available</span>
-                        <span>{offer.total_available_amount}</span>
+                        <span>{formatNumber(offer.total_available_amount)}</span>
                       </div>
 
                       <div className="mobile-card-view-row">
@@ -335,7 +336,7 @@ return (
                     <TableBody>
                       {myOffers.map((offer) => (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
-                          <TableCell>{offer.id}</TableCell>
+                          <TableCell>{formatNumber(offer.id)}</TableCell>
                           <TableCell>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -363,9 +364,9 @@ return (
                             </Tooltip>
                           </TableCell>
                           <TableCell>{offer.token}</TableCell>
-                          <TableCell>{offer.min_amount}</TableCell>
-                          <TableCell>{offer.max_amount}</TableCell>
-                          <TableCell>{offer.total_available_amount}</TableCell>
+                          <TableCell>{formatNumber(offer.min_amount)}</TableCell>
+                          <TableCell>{formatNumber(offer.max_amount)}</TableCell>
+                          <TableCell>{formatNumber(offer.total_available_amount)}</TableCell>
                           <TableCell>
                             <span
                               className={
