@@ -420,7 +420,7 @@ function OffersPage() {
                               <DialogTrigger asChild>
                                 <Button
                                   onClick={() => openTradeDialog(offer.id)}
-                                  className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
+                                  className="bg-[#10b981] hover:bg-[#059669] text-white w-full flex justify-center"
                                 >
                                   Preview Trade
                                 </Button>
@@ -452,7 +452,7 @@ function OffersPage() {
                           )
                         ) : (
                           <Button
-                            className="bg-gray-400 hover:bg-gray-500 text-white w-full cursor-not-allowed"
+                            className="bg-gray-400 hover:bg-gray-500 text-white w-full flex justify-center cursor-not-allowed"
                           >
                             Connect Wallet to Trade
                           </Button>
@@ -541,7 +541,7 @@ function OffersPage() {
                                   <DialogTrigger asChild>
                                     <Button
                                       onClick={() => openTradeDialog(offer.id)}
-                                      className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                                      className="bg-[#10b981] hover:bg-[#059669] text-white border-none h-8 px-2 w-full flex justify-center"
                                     >
                                       Preview Trade
                                     </Button>
