@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "./components/StatusBadge";
 import Container from "./components/Container";
 
 interface HeaderProps {
@@ -45,12 +45,7 @@ function Header({ isLoggedIn, account }: HeaderProps) {
               loading="lazy"
             />
             <h1 className="font-black">LocalSolana</h1>
-            <Badge
-              variant="secondary"
-              className="bg-purple-100 text-purple-700 text-[10px] uppercase font-semibold hidden sm:inline-flex"
-            >
-              Devnet
-            </Badge>
+            <StatusBadge />
           </Link>
 
           {/* Mobile menu button */}

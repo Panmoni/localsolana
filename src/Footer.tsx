@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import Container from './components/Container';
+import StatusBadge from "./components/StatusBadge";
 import { Twitter, Github, MessageCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -17,6 +18,7 @@ export const Footer: React.FC = () => {
                   className="h-4 sm:h-6 md:h-10 lg:h-12 w-auto max-h-12 mx-auto"
                   loading="lazy"
                 />
+                <StatusBadge />
                 <h4 className="font-black text-purple-800 mb-4 sm:mb-6">LocalSolana</h4>
               </Link>
               <p className="text-sm">Buy and sell USDC on Solana P2P anywhere, anyhow</p>
