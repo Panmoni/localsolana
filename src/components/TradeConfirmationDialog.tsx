@@ -230,7 +230,7 @@ const TradeConfirmationDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 my-4">
+        <div className="space-y-1 mb-4 mt-2">
           {/* Trade Type */}
           <div className="flex justify-between items-center p-2 bg-neutral-100 rounded">
             <span className="font-medium text-neutral-700">Trade Type</span>
@@ -262,21 +262,37 @@ const TradeConfirmationDialog = ({
           )}
 
           {/* Rate */}
-          <div className="flex justify-between items-center p-2 bg-neutral-100 rounded">
-            <span className="font-medium text-neutral-700">Rate Adjustment</span>
-            <span className={
-              offer.rate_adjustment > 1
-                ? 'text-[#059669]'
-                : offer.rate_adjustment < 1
-                  ? 'text-red-600'
-                  : 'text-neutral-600'
-            }>
-              {offer.rate_adjustment > 1
-                ? `+${((offer.rate_adjustment - 1) * 100).toFixed(2)}%`
-                : offer.rate_adjustment < 1
-                  ? `-${((1 - offer.rate_adjustment) * 100).toFixed(2)}%`
-                  : "0%"}
-            </span>
+          <div className="flex flex-col p-2 bg-neutral-100 rounded">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-neutral-700">Rate Adjustment</span>
+              <span className={
+                offer.rate_adjustment > 1
+                  ? 'text-[#059669]'
+                  : offer.rate_adjustment < 1
+                    ? 'text-red-600'
+                    : 'text-neutral-600'
+              }>
+                {offer.rate_adjustment > 1
+                  ? `+${((offer.rate_adjustment - 1) * 100).toFixed(2)}%`
+                  : offer.rate_adjustment < 1
+                    ? `-${((1 - offer.rate_adjustment) * 100).toFixed(2)}%`
+                    : "0%"}
+              </span>
+            </div>
+            <div className="text-xs text-neutral-500 mt-1">
+              {offer.offer_type === 'BUY'
+                ? `You are selling USDC at ${offer.rate_adjustment > 1
+                    ? `${((offer.rate_adjustment - 1) * 100).toFixed(2)}% above`
+                    : offer.rate_adjustment < 1
+                      ? `${((1 - offer.rate_adjustment) * 100).toFixed(2)}% below`
+                      : `the same as`} the market price.`
+                : `You are buying USDC at ${offer.rate_adjustment > 1
+                    ? `${((offer.rate_adjustment - 1) * 100).toFixed(2)}% above`
+                    : offer.rate_adjustment < 1
+                      ? `${((1 - offer.rate_adjustment) * 100).toFixed(2)}% below`
+                      : `the same as`} the market price.`
+              }
+            </div>
           </div>
 
           {/* Amount Input */}
@@ -313,7 +329,7 @@ const TradeConfirmationDialog = ({
 
           {/* Calculated Values */}
           {!loading && !error && fiatAmount > 0 && (
-            <div className="space-y-3 p-3 bg-neutral-100 rounded">
+            <div className="space-y-3 py-3 bg-neutral-100 rounded">
               <div className="font-medium text-neutral-700 border-b pb-1 mb-2">
                 Details
               </div>
@@ -338,13 +354,13 @@ const TradeConfirmationDialog = ({
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-700">Total to escrow</span>
+                    <span className="text-sm text-neutral-700">You will escrow</span>
                     <span className="font-medium">
                       {amount && formatNumber(parseFloat(amount) + platformFee)} USDC
                     </span>
                   </div>
 
-                  <div className="border-t pt-2 mt-2 flex justify-between items-center">
+                  <div className="pt-2 mt-2 flex justify-between items-center bg-amber-100 rounded p-2">
                     <span className="font-medium text-neutral-700">You will receive</span>
                     <span className="font-bold text-[#5b21b6]">{formatNumber(fiatAmount)} {offer.fiat_currency}</span>
                   </div>
@@ -352,7 +368,7 @@ const TradeConfirmationDialog = ({
               ) : (
                 // Buying USDC
                 <>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center bg-amber-100 rounded p-2">
                     <span className="text-sm text-neutral-700">You will pay</span>
                     <span className="font-medium">{formatNumber(fiatAmount)} {offer.fiat_currency}</span>
                   </div>
@@ -402,11 +418,11 @@ const TradeConfirmationDialog = ({
             <div className="p-3 bg-blue-50 text-blue-800 rounded text-sm">
               {offer.offer_type === "BUY" ? (
                 <p>
-                  <strong>Note:</strong> Since you are selling USDC, you will be prompted to create the escrow account and to pay for it on-chain. You will pay the 1% LocalSolana fee in USDC.
+                  <strong>Note:</strong> As the seller, you will be prompted to create the on-chain escrow account and to pay for it in SOL.
                 </p>
               ) : (
                 <p>
-                  <strong>Note:</strong> Since you are buying USDC, you will be prompted to make a fiat payment in a specific amount and then confirm that via an on-chain action. You pay no LocalSolana fees.
+                  <strong>Note:</strong> As the buyer, you will wait for the seller to escrow the crypto. Later, you will be prompted to make the fiat payment, and then confirm that via an on-chain action.
                 </p>
               )}
             </div>
