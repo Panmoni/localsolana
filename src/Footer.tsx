@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import Container from './components/Container';
+import { Twitter, Github, MessageCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -43,13 +44,16 @@ export const Footer: React.FC = () => {
 
           <div className="footer-section">
             <h3 className="footer-title">Connect</h3>
-            <p>
-              <a className="!font-normal" href="mailto:hello@panmoni.com">hello@panmoni.com</a>
-            </p>
 
             <p>
               <a target="_blank" href="https://getwaitlist.com/waitlist/19781" rel="noopener noreferrer">Get on the Waitlist</a>
             </p>
+
+            <p>
+              <a className="!font-normal" href="mailto:hello@panmoni.com">hello@panmoni.com</a>
+            </p>
+
+
 
             <div className="social-links">
               <a
@@ -57,24 +61,27 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X (Twitter)"
+                className="flex items-center"
               >
-                X
+                <Twitter size={20} className="text-purple-700 hover:text-purple-800" />
               </a>
               <a
                 href="https://github.com/Panmoni/localsolana"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
+                className="flex items-center"
               >
-                GitHub
+                <Github size={20} className="text-purple-700 hover:text-purple-800" />
               </a>
               <a
                 href="https://t.me/Panmoni/802"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
+                className="flex items-center"
               >
-                Telegram
+                <MessageCircle size={20} className="text-purple-700 hover:text-purple-800" />
               </a>
             </div>
           </div>
