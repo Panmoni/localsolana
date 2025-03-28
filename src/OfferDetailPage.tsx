@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
+import OfferTypeTooltip from "./components/OfferTypeTooltip";
 
 function OfferDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -116,7 +118,8 @@ function OfferDetailPage() {
 
   if (loading) {
     return (
-      <Container>
+      <TooltipProvider>
+        <Container>
         <Card>
           <CardContent className="p-6">
             <div className="flex justify-center items-center py-16">
@@ -125,12 +128,14 @@ function OfferDetailPage() {
           </CardContent>
         </Card>
       </Container>
+      </TooltipProvider>
     );
   }
 
   if (error) {
     return (
-      <Container>
+      <TooltipProvider>
+        <Container>
         <Card>
           <CardContent className="p-6">
             <Alert variant="destructive" className="mb-0 border-none bg-red-50">
@@ -139,12 +144,14 @@ function OfferDetailPage() {
           </CardContent>
         </Card>
       </Container>
+      </TooltipProvider>
     );
   }
 
   if (!offer || !creator) {
     return (
-      <Container>
+      <TooltipProvider>
+        <Container>
         <Card>
           <CardContent className="p-6">
             <Alert className="mb-0 bg-amber-50 border-amber-200">
@@ -155,11 +162,13 @@ function OfferDetailPage() {
           </CardContent>
         </Card>
       </Container>
+      </TooltipProvider>
     );
   }
 
   return (
-    <Container>
+    <TooltipProvider>
+      <Container>
       <Card className="mb-4">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -190,13 +199,7 @@ function OfferDetailPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
                 <span className="font-medium text-neutral-700">Type</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  offer.offer_type === 'BUY'
-                    ? 'bg-[#d1fae5] text-[#065f46]'
-                    : 'bg-[#ede9fe] text-[#5b21b6]'
-                }`}>
-                  {offer.offer_type}
-                </span>
+                <OfferTypeTooltip offerType={offer.offer_type} />
               </div>
 
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg">
@@ -289,6 +292,7 @@ function OfferDetailPage() {
         </CardFooter>
       </Card>
     </Container>
+    </TooltipProvider>
   );
 }
 

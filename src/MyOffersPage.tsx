@@ -20,9 +20,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
+import OfferTypeTooltip from "./components/OfferTypeTooltip";
 
 interface MyOffersPageProps {
   account: Account | null;
@@ -203,28 +204,7 @@ return (
                     <div key={offer.id} className="mobile-card-view">
                       <div className="mobile-card-view-header">
                         <span>{formatNumber(offer.id)}</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              offer.offer_type === 'BUY'
-                                ? 'bg-[#d1fae5] text-[#065f46]'
-                                : 'bg-[#ede9fe] text-[#5b21b6]'
-                            }`}>
-                              {offer.offer_type}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className={
-                            offer.offer_type === 'BUY'
-                              ? 'bg-[#d1fae5] text-[#065f46]'
-                              : 'bg-[#ede9fe] text-[#5b21b6]'
-                          }>
-                            <p>
-                              {offer.offer_type === 'BUY'
-                                ? 'You are buying USDC from others'
-                                : 'You are selling USDC to others'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
+                        <OfferTypeTooltip offerType={offer.offer_type} />
                       </div>
 
                       <div className="mobile-card-view-row">
@@ -338,30 +318,7 @@ return (
                         <TableRow key={offer.id} className="hover:bg-neutral-50">
                           <TableCell>{formatNumber(offer.id)}</TableCell>
                           <TableCell>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    offer.offer_type === "BUY"
-                                      ? "bg-[#d1fae5] text-[#065f46]"
-                                      : "bg-[#ede9fe] text-[#5b21b6]"
-                                  }`}
-                                >
-                                  {offer.offer_type}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent className={
-                                offer.offer_type === "BUY"
-                                  ? "bg-[#d1fae5] text-[#065f46]"
-                                  : "bg-[#ede9fe] text-[#5b21b6]"
-                              }>
-                                <p>
-                                  {offer.offer_type === "BUY"
-                                  ? 'You are buying USDC from others'
-                                  : 'You are selling USDC to others'}
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
+                            <OfferTypeTooltip offerType={offer.offer_type} />
                           </TableCell>
                           <TableCell>{offer.token}</TableCell>
                           <TableCell>{formatNumber(offer.min_amount)}</TableCell>
