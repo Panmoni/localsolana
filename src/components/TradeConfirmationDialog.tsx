@@ -116,6 +116,8 @@ const TradeConfirmationDialog = ({
     if (isOpen) {
       fetchPriceData();
     }
+    // We only want to fetch price data when the dialog opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Reset form when dialog closes
@@ -147,10 +149,27 @@ const TradeConfirmationDialog = ({
         calculateAmounts();
       }
     }
+    // Intentionally excluding priceData and calculateAmounts to prevent
+    // the amount from being reset when price data changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, offer]); // Only run when dialog opens or offer changes
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // Allow empty input for user to clear and type a new value
+    if (value === "") {
+      setAmount(value);
+      return;
+    }
+
+    // Validate that input is a number with up to 2 decimal places
+    const regex = /^\d*\.?\d{0,2}$/;
+    if (!regex.test(value)) {
+      return;
+    }
+
+    // Update the amount state
     setAmount(value);
   };
 
@@ -249,13 +268,17 @@ const TradeConfirmationDialog = ({
             <div className="flex items-center space-x-2">
               <Input
                 id="amount"
-                type="number"
+                type="text" // Changed from "number" to "text" for better decimal control
+                inputMode="decimal" // Brings up numeric keyboard on mobile with decimal point
                 value={amount}
                 onChange={handleAmountChange}
                 placeholder={`Enter amount (${offer.min_amount} - ${offer.max_amount})`}
                 className="bg-neutral-100"
                 readOnly={false}
                 autoFocus
+                min={offer.min_amount}
+                max={offer.max_amount}
+                step="0.01" // Allow increments of 0.01
               />
               <span className="text-sm text-neutral-500">{offer.token}</span>
             </div>
