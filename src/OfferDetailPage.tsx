@@ -14,6 +14,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
 import OfferTypeTooltip from "./components/OfferTypeTooltip";
@@ -28,6 +36,7 @@ function OfferDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userAccount, setUserAccount] = useState<Account | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchOfferAndCreator = async () => {
@@ -76,15 +85,16 @@ function OfferDetailPage() {
   // Check if the current user is the owner of the offer
   const isOwner = userAccount && offer && userAccount.id === offer.creator_account_id;
 
+  const openDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
   const handleDelete = async () => {
     if (!offer) return;
 
-    if (!window.confirm("Are you sure you want to delete this offer?")) {
-      return;
-    }
-
     try {
       await deleteOffer(offer.id);
+      setIsDeleteDialogOpen(false);
       navigate('/my-offers', { state: { message: 'Offer deleted successfully' } });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -270,7 +280,7 @@ function OfferDetailPage() {
               </Link>
               <Button
                 variant="outline"
-                onClick={handleDelete}
+                onClick={openDeleteDialog}
                 className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 w-full sm:w-auto"
               >
                 Delete Offer
@@ -296,6 +306,33 @@ function OfferDetailPage() {
         </CardFooter>
       </Card>
     </Container>
+
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent className="bg-neutral-100 z-999">
+        <DialogHeader>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this offer? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="mt-4">
+          <Button
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
+            Delete Offer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </TooltipProvider>
   );
 }

@@ -426,7 +426,7 @@ function OffersPage() {
                                   onClick={() => openTradeDialog(offer.id)}
                                   className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
                                 >
-                                  Start Trade
+                                  Preview Trade
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="bg-neutral-100 z-999">
@@ -547,7 +547,7 @@ function OffersPage() {
                                       onClick={() => openTradeDialog(offer.id)}
                                       className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
                                     >
-                                      Start Trade
+                                      Preview Trade
                                     </Button>
                                   </DialogTrigger>
                                   <DialogContent>

@@ -21,6 +21,14 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
 import OfferTypeTooltip from "./components/OfferTypeTooltip";
@@ -36,6 +44,8 @@ function MyOffersPage({ account }: MyOffersPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchMyOffers = async () => {
@@ -66,15 +76,19 @@ function MyOffersPage({ account }: MyOffersPageProps) {
     fetchMyOffers();
   }, [account]);
 
-  const handleDeleteOffer = async (offerId: number) => {
-    if (!window.confirm("Are you sure you want to delete this offer?")) {
-      return;
-    }
+  const openDeleteDialog = (offerId: number) => {
+    setSelectedOfferId(offerId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteOffer = async () => {
+    if (!selectedOfferId) return;
 
     try {
-      await deleteOffer(offerId);
-      setMyOffers(myOffers.filter((offer) => offer.id !== offerId));
+      await deleteOffer(selectedOfferId);
+      setMyOffers(myOffers.filter((offer) => offer.id !== selectedOfferId));
       setDeleteSuccess("Offer deleted successfully");
+      setIsDeleteDialogOpen(false);
 
       // Clear success message after 3 seconds
       setTimeout(() => {
@@ -325,7 +339,7 @@ return (
                           <TableCell>
                             <OfferActionButtons
                               offerId={offer.id}
-                              onDelete={handleDeleteOffer}
+                              onDelete={() => openDeleteDialog(offer.id)}
                             />
                           </TableCell>
                         </TableRow>
@@ -339,6 +353,33 @@ return (
         </CardContent>
       </Card>
     </Container>
+
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent className="bg-neutral-100 z-999">
+        <DialogHeader>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this offer? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="mt-4">
+          <Button
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDeleteOffer}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
+            Delete Offer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </TooltipProvider>
   );
 }
