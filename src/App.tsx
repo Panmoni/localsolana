@@ -15,6 +15,7 @@ import MyTradesPage from "./MyTradesPage";
 import MyEscrowsPage from "./MyEscrowsPage";
 import OfferDetailPage from "./OfferDetailPage";
 import EditOfferPage from "./EditOfferPage";
+import TradePage from "./TradePage";
 
 function App() {
   const { primaryWallet } = useDynamicContext();
@@ -56,6 +57,7 @@ function App() {
               <Route path="/escrows" element={<MyEscrowsPage account={account} />} />
               <Route path="/offer/:id" element={<OfferDetailPage />} />
               <Route path="/edit-offer/:id" element={<EditOfferPage />} />
+              <Route path="/trade/:id" element={<TradePage />} />
             </Routes>
           </Container>
         </main>

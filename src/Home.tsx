@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getOffers,
   createTrade,
@@ -19,6 +19,15 @@ import OfferActionButtons from "./components/OfferActionButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -34,6 +43,7 @@ import NoOffers from "./NoOffers";
 
 function OffersPage() {
   const { primaryWallet } = useDynamicContext();
+  const navigate = useNavigate();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +54,8 @@ function OffersPage() {
   const [currentCurrency, setCurrentCurrency] = useState<string>("ALL");
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [currentUserAccountId, setCurrentUserAccountId] = useState<number | null>(null);
+  const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -202,6 +214,11 @@ function OffersPage() {
     fetchOffers();
   }, []);
 
+  const openTradeDialog = (offerId: number) => {
+    setSelectedOfferId(offerId);
+    setIsDialogOpen(true);
+  };
+
   const startTrade = async (offerId: number) => {
     try {
       const tradeData = {
@@ -229,7 +246,9 @@ function OffersPage() {
         const escrowResponse = await createEscrow(escrowData);
         console.log("[OffersPage] Escrow instruction generated:", escrowResponse.data);
 
-        alert(`Trade ${formatNumber(tradeId)} started successfully`);
+        // Close dialog and navigate to trade page
+        setIsDialogOpen(false);
+        navigate(`/trade/${tradeId}`);
       } else {
         alert(`Trade ${formatNumber(tradeId)} started, but no wallet connected`);
       }
@@ -401,12 +420,39 @@ function OffersPage() {
                               isMobile={true}
                             />
                           ) : (
-                            <Button
-                              onClick={() => startTrade(offer.id)}
-                              className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
-                            >
-                              Start Trade
-                            </Button>
+                            <Dialog open={isDialogOpen && selectedOfferId === offer.id} onOpenChange={(open) => !open && setIsDialogOpen(false)}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  onClick={() => openTradeDialog(offer.id)}
+                                  className="bg-[#10b981] hover:bg-[#059669] text-white w-full"
+                                >
+                                  Start Trade
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="bg-neutral-100 z-999">
+                                <DialogHeader>
+                                  <DialogTitle>Confirm Trade</DialogTitle>
+                                  <DialogDescription>
+                                    Are you sure you want to start a trade with this offer?
+                                    This will create a new trade and set up an escrow account.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter className="mt-4">
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setIsDialogOpen(false)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    className="bg-[#10b981] hover:bg-[#059669] text-white"
+                                    onClick={() => startTrade(offer.id)}
+                                  >
+                                    Confirm Trade
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
                           )
                         ) : (
                           <Button
@@ -495,12 +541,39 @@ function OffersPage() {
                                   onDelete={handleDeleteOffer}
                                 />
                               ) : (
-                                <Button
-                                  onClick={() => startTrade(offer.id)}
-                                  className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
-                                >
-                                  Start Trade
-                                </Button>
+                                <Dialog open={isDialogOpen && selectedOfferId === offer.id} onOpenChange={(open) => !open && setIsDialogOpen(false)}>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      onClick={() => openTradeDialog(offer.id)}
+                                      className="bg-[#10b981] hover:bg-[#059669] text-white border-none text-sm px-3 py-1 h-8"
+                                    >
+                                      Start Trade
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent>
+                                    <DialogHeader>
+                                      <DialogTitle>Confirm Trade</DialogTitle>
+                                      <DialogDescription>
+                                        Are you sure you want to start a trade with this offer?
+                                        This will create a new trade and set up an escrow account.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter className="mt-4">
+                                      <Button
+                                        variant="outline"
+                                        onClick={() => setIsDialogOpen(false)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        className="bg-[#10b981] hover:bg-[#059669] text-white"
+                                        onClick={() => startTrade(offer.id)}
+                                      >
+                                        Confirm Trade
+                                      </Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
                               )
                             ) : (
                               <Button
