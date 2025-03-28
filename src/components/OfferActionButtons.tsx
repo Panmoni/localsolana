@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 interface OfferActionButtonsProps {
   offerId: number;
@@ -13,25 +14,31 @@ function OfferActionButtons({ offerId, onDelete, isMobile = false }: OfferAction
       <Link to={`/offer/${offerId}`} className={isMobile ? "flex-1" : ""}>
         <Button
           variant="outline"
-          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full text-sm px-3 py-1 h-8"
+          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full h-8 px-2"
+          aria-label="View offer"
+          title="View offer"
         >
-          View
+          <Eye size={16} />
         </Button>
       </Link>
       <Link to={`/edit-offer/${offerId}`} className={isMobile ? "flex-1" : ""}>
         <Button
           variant="outline"
-          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full text-sm px-3 py-1 h-8"
+          className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full h-8 px-2"
+          aria-label="Edit offer"
+          title="Edit offer"
         >
-          Edit
+          <Pencil size={16} />
         </Button>
       </Link>
       <Button
         variant="outline"
         onClick={() => onDelete(offerId)}
-        className={`border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 text-sm px-3 py-1 h-8 ${isMobile ? "flex-1" : ""}`}
+        className={`border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 h-8 px-2 ${isMobile ? "flex-1" : ""}`}
+        aria-label="Delete offer"
+        title="Delete offer"
       >
-        Delete
+        <Trash2 size={16} />
       </Button>
     </div>
   );

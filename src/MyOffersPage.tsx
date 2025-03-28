@@ -24,6 +24,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 import Container from "./components/Container";
 import OfferTypeTooltip from "./components/OfferTypeTooltip";
+import OfferActionButtons from "./components/OfferActionButtons";
 
 interface MyOffersPageProps {
   account: Account | null;
@@ -247,31 +248,11 @@ return (
                         </span>
                       </div>
 
-                      <div className="mt-4 flex gap-2">
-                        <Link to={`/offer/${offer.id}`} className="flex-1">
-                          <Button
-                            variant="outline"
-                            className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
-                          >
-                            View
-                          </Button>
-                        </Link>
-                        <Link to={`/edit-offer/${offer.id}`} className="flex-1">
-                          <Button
-                            variant="outline"
-                            className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
-                          >
-                            Edit
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="outline"
-                          onClick={() => handleDeleteOffer(offer.id)}
-                          className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 flex-1"
-                        >
-                          Delete
-                        </Button>
-                      </div>
+                      <OfferActionButtons
+                        offerId={offer.id}
+                        onDelete={handleDeleteOffer}
+                        isMobile={true}
+                      />
                     </div>
                   ))}
                 </div>
@@ -342,33 +323,10 @@ return (
                             {formatDistanceToNow(new Date(offer.created_at))} ago
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
-                              <div className="flex gap-2">
-                                <Link to={`/offer/${offer.id}`}>
-                                  <Button
-                                    variant="outline"
-                                    className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
-                                  >
-                                    View
-                                  </Button>
-                                </Link>
-                                <Link to={`/edit-offer/${offer.id}`}>
-                                  <Button
-                                    variant="outline"
-                                    className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
-                                  >
-                                    Edit
-                                  </Button>
-                                </Link>
-                              </div>
-                              <Button
-                                variant="outline"
-                                onClick={() => handleDeleteOffer(offer.id)}
-                                className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 text-sm px-3 py-1 h-8"
-                              >
-                                Delete
-                              </Button>
-                            </div>
+                            <OfferActionButtons
+                              offerId={offer.id}
+                              onDelete={handleDeleteOffer}
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
