@@ -8,3 +8,4 @@ A Vite + React frontend for the LocalSolana P2P trading dapp on Solana Devnet.
 - https://github.com/Panmoni/localsolana-api
 - https://github.com/Panmoni/localsolana-www
 - https://github.com/Panmoni/localsolana-listener
+- https://github.com/Panmoni/localsolana-pricing
