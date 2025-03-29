@@ -1,4 +1,3 @@
-import React from "react";
 import { Account } from "../api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
