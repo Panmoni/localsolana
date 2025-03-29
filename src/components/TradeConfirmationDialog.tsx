@@ -18,7 +18,7 @@ interface TradeConfirmationDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   offer: Offer;
-  onConfirm: (offerId: number, amount: string) => void;
+  onConfirm: (offerId: number, amount: string, fiatAmount: number) => void;
   triggerButton?: React.ReactNode;
 }
 
@@ -216,7 +216,7 @@ const TradeConfirmationDialog = ({
 
     // Pass the amount as a decimal string directly
     const formattedAmount = numAmount.toString();
-    onConfirm(offer.id, formattedAmount);
+    onConfirm(offer.id, formattedAmount, fiatAmount);
   };
 
   return (

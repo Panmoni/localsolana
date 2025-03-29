@@ -207,7 +207,7 @@ function OffersPage() {
     setIsDialogOpen(true);
   };
 
-  const startTrade = async (offerId: number, amount: string = "1000000") => {
+  const startTrade = async (offerId: number, amount: string = "1000000", fiatAmount: number = 0) => {
     try {
       const offer = offers.find((o) => o.id === offerId);
       if (!offer) {
@@ -217,6 +217,7 @@ function OffersPage() {
       const tradeData = {
         leg1_offer_id: offerId,
         leg1_crypto_amount: amount, // Now using the amount from the form
+        leg1_fiat_amount: fiatAmount.toString(), // Add the fiat amount
         from_fiat_currency: offer.fiat_currency,
         destination_fiat_currency: offer.fiat_currency,
       };
