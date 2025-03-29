@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   getOffers,
   createTrade,
-  createEscrow,
+  // createEscrow, // Will be used again when escrow creation is moved back from TradePage after MVP
   Offer,
   getAccountById,
   getAccount,
@@ -224,19 +224,20 @@ function OffersPage() {
       const tradeId = tradeResponse.data.id;
 
       if (primaryWallet) {
-        const seller = primaryWallet.address;
-        const buyer = String(offer.creator_account_id); // Convert to string
-
-        const escrowData = {
-          trade_id: tradeId,
-          escrow_id: Math.floor(Math.random() * 1000000),
-          seller,
-          buyer,
-          amount: parseFloat(amount), // Convert string amount to float to preserve decimal places
-        };
-
-        const escrowResponse = await createEscrow(escrowData);
-        console.log("[OffersPage] Escrow instruction generated:", escrowResponse.data);
+        // MVP: Escrow creation moved to TradePage to happen manually by user action
+        // const seller = primaryWallet.address;
+        // const buyer = String(offer.creator_account_id); // Convert to string
+        //
+        // const escrowData = {
+        //   trade_id: tradeId,
+        //   escrow_id: Math.floor(Math.random() * 1000000),
+        //   seller,
+        //   buyer,
+        //   amount: parseFloat(amount), // Convert string amount to float to preserve decimal places
+        // };
+        //
+        // const escrowResponse = await createEscrow(escrowData);
+        // console.log("[OffersPage] Escrow instruction generated:", escrowResponse.data);
 
         // Close dialog and navigate to trade page
         setIsDialogOpen(false);
