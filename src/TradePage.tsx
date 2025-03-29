@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getTradeById as getTrade, getAccountById, getOfferById, Trade, Offer, Account } from "./api";
 import { formatNumber } from "./lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -91,11 +92,6 @@ function TradeDescription({ trade, offer, userRole, creator, counterparty }: Tra
         )}
       </p>
       <div className="mt-2 text-neutral-600">
-        {offer?.terms && (
-          <p>
-            <strong>Terms</strong>: {offer.terms}
-          </p>
-        )}
 
         {otherParty && (
           <div className="mt-2 flex items-center">
@@ -128,6 +124,16 @@ function TradeDescription({ trade, offer, userRole, creator, counterparty }: Tra
             </div>
           </div>
         )}
+
+        {offer?.terms && (
+          <div className="mt-2 mb-3">
+            <p className="mb-1"><strong>Terms</strong>:</p>
+            <blockquote className="pl-3 border-l-2 border-gray-300 italic text-gray-600 text-base">
+              "{offer.terms}"
+            </blockquote>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -265,6 +271,7 @@ function StatusLog({ trade }: StatusLogProps) {
 function TradePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { primaryWallet } = useDynamicContext();
   const [trade, setTrade] = useState<Trade | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [creator, setCreator] = useState<Account | null>(null);
@@ -397,23 +404,6 @@ function TradePage() {
         </CardContent>
       </Card>
 
-
-      {/* Participants */}
-      <Card className="border border-gray-200 shadow-sm p-4">
-        <CardHeader>
-          <CardTitle className="text-[#5b21b6]">Participants</CardTitle>
-          <CardDescription>People involved in this trade</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-            <ParticipantCard user={creator} role="Offer Creator" />
-          </div>
-          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-            <ParticipantCard user={counterparty} role="Counterparty" />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Status Log */}
       <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
@@ -441,8 +431,8 @@ function TradePage() {
                 onClick={() => window.open(`https://t.me/${counterparty.telegram_username}`, '_blank')}
                 className="bg-[#0088cc] hover:bg-[#0077b5] text-white"
               >
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.14 19.018c-.237 0-.47-.033-.696-.1-1.92-.56-3.773-1.44-5.66-2.64-1.333-.853-2.46-1.87-3.38-3.053-.92-1.183-1.64-2.537-2.16-4.06-.52-1.523-.78-3.057-.78-4.6 0-.56.073-1.093.22-1.6.147-.507.367-.96.66-1.36.293-.4.66-.727 1.1-.98.44-.253.94-.38 1.5-.38.173 0 .347.023.52.07.173.047.34.123.5.23.16.107.307.247.44.42.133.173.253.38.36.62l1.44 3.6c.08.213.137.413.17.6.033.187.05.353.05.5 0 .213-.043.42-.13.62-.087.2-.217.387-.39.56l-.76.76c-.08.08-.117.177-.11.29.007.113.043.217.11.31.133.187.347.447.64.78.293.333.62.673.98 1.02.36.347.7.673 1.02.98.32.307.58.52.78.64.093.067.197.103.31.11.113.007.21-.03.29-.11l.76-.76c.173-.173.36-.303.56-.39.2-.087.407-.13.62-.13.147 0 .313.017.5.05.187.033.387.09.6.17l3.6 1.44c.24.107.447.227.62.36.173.133.313.28.42.44.107.16.183.327.23.5.047.173.07.347.07.52 0 .56-.127 1.06-.38 1.5-.253.44-.58.807-.98 1.1-.4.293-.853.513-1.36.66-.507.147-1.04.22-1.6.22h-.08z"/>
+                <svg className="w-6 h-6 mr-1" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M41.4193 7.30899C41.4193 7.30899 45.3046 5.79399 44.9808 9.47328C44.8729 10.9883 43.9016 16.2908 43.1461 22.0262L40.5559 39.0159C40.5559 39.0159 40.3401 41.5048 38.3974 41.9377C36.4547 42.3705 33.5408 40.4227 33.0011 39.9898C32.5694 39.6652 24.9068 34.7955 22.2086 32.4148C21.4531 31.7655 20.5897 30.4669 22.3165 28.9519L33.6487 18.1305C34.9438 16.8319 36.2389 13.8019 30.8426 17.4812L15.7331 27.7616C15.7331 27.7616 14.0063 28.8437 10.7686 27.8698L3.75342 25.7055C3.75342 25.7055 1.16321 24.0823 5.58815 22.459C16.3807 17.3729 29.6555 12.1786 41.4193 7.30899Z" fill="currentColor"/>
                 </svg>
                 Message on Telegram
               </Button>
@@ -451,8 +441,32 @@ function TradePage() {
         </CardContent>
       </Card>
 
+            {/* Participants */}
+      <Card className="border border-gray-200 shadow-sm p-4">
+        <CardHeader>
+          <CardTitle className="text-[#5b21b6]">Participants</CardTitle>
+          <CardDescription>People involved in this trade</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            <ParticipantCard
+              user={creator}
+              role="Offer Creator"
+              isCurrentUser={primaryWallet?.address?.toLowerCase() === creator?.wallet_address?.toLowerCase()}
+            />
+          </div>
+          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            <ParticipantCard
+              user={counterparty}
+              role="Counterparty"
+              isCurrentUser={primaryWallet?.address?.toLowerCase() === counterparty?.wallet_address?.toLowerCase()}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Navigation Buttons */}
-      <div className="flex justify-end p-4 border border-gray-200 rounded-lg shadow-sm">
+      <div className="flex justify-end p-4">
         <Button
           onClick={() => navigate("/trades")}
           className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white"
