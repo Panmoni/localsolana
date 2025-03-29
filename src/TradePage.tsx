@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getTradeById as getTrade, getAccountById, getOfferById, Trade, Offer, Account } from "./api";
 import { formatNumber } from "./lib/utils";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
@@ -21,9 +21,11 @@ interface TradeDescriptionProps {
   trade: Trade;
   offer: Offer | null;
   userRole: 'buyer' | 'seller';
+  creator: Account | null;
+  counterparty: Account | null;
 }
 
-function TradeDescription({ trade, offer, userRole }: TradeDescriptionProps) {
+function TradeDescription({ trade, offer, userRole, creator, counterparty }: TradeDescriptionProps) {
   // Calculate price from crypto and fiat amounts
   const price = trade.leg1_fiat_amount && trade.leg1_crypto_amount
     ? parseFloat(trade.leg1_fiat_amount) / parseFloat(trade.leg1_crypto_amount)
@@ -33,6 +35,28 @@ function TradeDescription({ trade, offer, userRole }: TradeDescriptionProps) {
     if (rate > 1) return `+${((rate - 1) * 100).toFixed(2)}%`;
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(2)}%`;
     return "0%";
+  };
+
+  // Simple logic based on user role:
+  // If current user is buyer, show seller; if current user is seller, show buyer
+  let otherParty;
+
+  // For BUY offers: creator is buyer, counterparty is seller
+  // For SELL offers: creator is seller, counterparty is buyer
+  if (userRole === 'buyer') {
+    // Current user is buyer, so show seller
+    otherParty = offer?.offer_type === 'BUY' ? creator : counterparty;
+  } else {
+    // Current user is seller, so show buyer
+    otherParty = offer?.offer_type === 'SELL' ? creator : counterparty;
+  }
+
+  const otherPartyRole = "Counterparty";
+
+  // Abbreviate wallet address if available
+  const abbreviateWallet = (wallet: string) => {
+    if (!wallet || wallet.length < 10) return wallet;
+    return `${wallet.substring(0, 6)}...${wallet.substring(wallet.length - 4)}`;
   };
 
   const rateAdjustment = offer?.rate_adjustment || 1;
@@ -55,12 +79,56 @@ function TradeDescription({ trade, offer, userRole }: TradeDescriptionProps) {
           {formatRate(rateAdjustment)}
         </span>{" "}
         {marketPosition} the market price.
+        {offer && (
+          <span className="ml-2">
+            <a
+              href={`/offers/${offer.id}`}
+              className="text-[#6d28d9] hover:text-[#5b21b6] underline text-sm"
+            >
+              [view source offer]
+            </a>
+          </span>
+        )}
       </p>
-      {offer?.terms && (
-        <p className="mt-2 text-neutral-600">
-          <strong>Terms</strong>: {offer.terms}
-        </p>
-      )}
+      <div className="mt-2 text-neutral-600">
+        {offer?.terms && (
+          <p>
+            <strong>Terms</strong>: {offer.terms}
+          </p>
+        )}
+
+        {otherParty && (
+          <div className="mt-2 flex items-center">
+            <strong className="mr-2">{otherPartyRole}:</strong>
+            <div className="flex items-center">
+              <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs mr-2 overflow-hidden">
+                {otherParty.profile_photo_url ? (
+                  <img src={otherParty.profile_photo_url} alt={otherParty.username || "User"} className="w-full h-full object-cover" />
+                ) : (
+                  otherParty.username?.[0]?.toUpperCase() || otherParty.wallet_address?.[0]?.toUpperCase() || "?"
+                )}
+              </div>
+              <span className="font-medium mr-1">{otherParty.username || "Anonymous"}</span>
+              {otherParty.wallet_address && (
+                <span className="text-xs text-gray-500 mr-1">({abbreviateWallet(otherParty.wallet_address)})</span>
+              )}
+              <span className="text-xs text-gray-500 mr-2">ID: {otherParty.id}</span>
+              {otherParty.telegram_username && (
+                <a
+                  href={`https://t.me/${otherParty.telegram_username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 flex items-center"
+                >
+                  <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                    <path d="M41.4193 7.30899C41.4193 7.30899 45.3046 5.79399 44.9808 9.47328C44.8729 10.9883 43.9016 16.2908 43.1461 22.0262L40.5559 39.0159C40.5559 39.0159 40.3401 41.5048 38.3974 41.9377C36.4547 42.3705 33.5408 40.4227 33.0011 39.9898C32.5694 39.6652 24.9068 34.7955 22.2086 32.4148C21.4531 31.7655 20.5897 30.4669 22.3165 28.9519L33.6487 18.1305C34.9438 16.8319 36.2389 13.8019 30.8426 17.4812L15.7331 27.7616C15.7331 27.7616 14.0063 28.8437 10.7686 27.8698L3.75342 25.7055C3.75342 25.7055 1.16321 24.0823 5.58815 22.459C16.3807 17.3729 29.6555 12.1786 41.4193 7.30899Z" fill="#0088cc"/>
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -307,7 +375,13 @@ function TradePage() {
         </CardHeader>
         <CardContent>
           {trade && offer && (
-            <TradeDescription trade={trade} offer={offer} userRole={userRole} />
+            <TradeDescription
+              trade={trade}
+              offer={offer}
+              userRole={userRole}
+              creator={creator}
+              counterparty={counterparty}
+            />
           )}
         </CardContent>
       </Card>
@@ -351,51 +425,7 @@ function TradePage() {
         </CardContent>
       </Card>
 
-      {/* Related Offer with Link */}
-      <Card className="border border-gray-200 shadow-sm p-4">
-        <CardHeader>
-          <CardTitle className="text-[#5b21b6]">Source Offer</CardTitle>
-          <CardDescription>The offer this trade is based on</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {offer ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-                <h3 className="font-medium text-neutral-700">Offer Type</h3>
-                <p>{offer.offer_type}</p>
-              </div>
-              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-                <h3 className="font-medium text-neutral-700">Amount Range</h3>
-                <p>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)} {offer.token}</p>
-              </div>
-              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-                <h3 className="font-medium text-neutral-700">Rate Adjustment</h3>
-                <p>{offer.rate_adjustment > 1
-                    ? `+${((offer.rate_adjustment - 1) * 100).toFixed(2)}%`
-                    : offer.rate_adjustment < 1
-                      ? `-${((1 - offer.rate_adjustment) * 100).toFixed(2)}%`
-                      : "0%"}</p>
-              </div>
-              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-                <h3 className="font-medium text-neutral-700">Currency</h3>
-                <p>{offer.fiat_currency}</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-neutral-500">Offer details not available</p>
-          )}
-        </CardContent>
-        <CardFooter>
-          {offer && (
-            <Button
-              onClick={() => navigate(`/offers/${offer.id}`)}
-              variant="outline"
-            >
-              View Source Offer
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
+      {/* Source Offer box removed */}
 
       {/* Chat Section */}
       <Card className="border border-gray-200 shadow-sm p-4">
@@ -423,13 +453,6 @@ function TradePage() {
 
       {/* Navigation Buttons */}
       <div className="flex justify-end p-4 border border-gray-200 rounded-lg shadow-sm">
-        <Button
-          onClick={() => navigate("/")}
-          variant="outline"
-          className="mr-2"
-        >
-          Back to Offers
-        </Button>
         <Button
           onClick={() => navigate("/trades")}
           className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white"
