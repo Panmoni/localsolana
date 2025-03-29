@@ -119,12 +119,12 @@ function isDeadlineExpired(deadline: string | null): boolean {
 }
 ```
 
-## Real-time Updates with SSE
+## Real-time Updates with Polling
 
 To implement real-time updates:
 
-1. Create an SSE client to connect to the backend
-2. Subscribe to trade updates for the current trade ID
+1. Create a polling interval to check for trade updates
+2. Fetch trade updates from the backend API
 3. Update the UI when trade state changes
 
 ```tsx
@@ -133,17 +133,27 @@ function useTradeUpdates(tradeId: number) {
   const [trade, setTrade] = useState<Trade | null>(null);
 
   useEffect(() => {
-    // Setup SSE connection
-    const eventSource = new EventSource(`${API_URL}/trades/${tradeId}/events`);
+    const POLL_INTERVAL = 5000; // 5 seconds
 
-    eventSource.onmessage = (event) => {
-      const updatedTrade = JSON.parse(event.data);
-      setTrade(updatedTrade);
+    const fetchTrade = async () => {
+      try {
+        const response = await fetch(`${API_URL}/trades/${tradeId}`);
+        const updatedTrade = await response.json();
+        setTrade(updatedTrade);
+      } catch (error) {
+        console.error('Error fetching trade:', error);
+      }
     };
+
+    // Initial fetch
+    fetchTrade();
+
+    // Set up polling
+    const interval = setInterval(fetchTrade, POLL_INTERVAL);
 
     // Cleanup
     return () => {
-      eventSource.close();
+      clearInterval(interval);
     };
   }, [tradeId]);
 
