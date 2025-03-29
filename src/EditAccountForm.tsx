@@ -176,7 +176,7 @@ function EditAccountForm({ account, onSaveSuccess, onCancel }: EditAccountFormPr
           value={formData.telegram_username}
           onChange={handleInputChange}
           className="border-neutral-300 focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
-          placeholder="@username"
+          placeholder="username"
         />
       </div>
 
