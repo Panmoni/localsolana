@@ -105,7 +105,7 @@ function TradePage() {
             Created {formatDate(trade.created_at)}
           </p>
         </div>
-        <StatusBadge>{trade.overall_status}</StatusBadge>
+        <StatusBadge>{trade.leg1_state}</StatusBadge>
       </div>
 
       <Card>
@@ -121,7 +121,7 @@ function TradePage() {
             </div>
             <div>
               <h3 className="font-medium text-neutral-700">Status</h3>
-              <StatusBadge>{trade.overall_status}</StatusBadge>
+              <StatusBadge>{trade.leg1_state}</StatusBadge>
             </div>
             <div>
               <h3 className="font-medium text-neutral-700">From Currency</h3>
