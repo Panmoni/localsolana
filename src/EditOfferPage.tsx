@@ -143,6 +143,7 @@ function EditOfferPage() {
               {!loading && formData && (
                 <div className="mt-4">
                   <OfferDescription offer={formData as Offer} />
+                  <p className="text-xs text-neutral-500 mt-2">To change the offer type, token or fiat currency, please create a new offer.</p>
                 </div>
               )}
             </div>
