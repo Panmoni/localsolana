@@ -283,7 +283,7 @@ function MyTradesPage({ account }: MyTradesPageProps) {
                           variant="outline"
                           className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] w-full"
                         >
-                          <Link to={`/trades/${trade.id}`} className="w-full block">
+                          <Link to={`/trade/${trade.id}`} className="w-full block">
                             Details
                           </Link>
                         </Button>
@@ -351,7 +351,7 @@ function MyTradesPage({ account }: MyTradesPageProps) {
                                 variant="outline"
                                 className="border-[#6d28d9] text-[#6d28d9] hover:text-[#5b21b6] hover:border-[#5b21b6] text-sm px-3 py-1 h-8"
                               >
-                                <Link to={`/trades/${trade.id}`}>
+                                <Link to={`/trade/${trade.id}`}>
                                   Details
                                 </Link>
                               </Button>
