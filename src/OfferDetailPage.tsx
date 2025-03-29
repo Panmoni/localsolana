@@ -95,7 +95,7 @@ function OfferDetailPage() {
     try {
       await deleteOffer(offer.id);
       setIsDeleteDialogOpen(false);
-      navigate('/my-offers', { state: { message: 'Offer deleted successfully' } });
+      navigate('/offers', { state: { message: 'Offer deleted successfully' } });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setError(`Failed to delete offer: ${errorMessage}`);
@@ -188,7 +188,7 @@ function OfferDetailPage() {
                 Offer #{formatNumber(offer.id)}
               </CardTitle>
               <CardDescription>
-                Created {formatDistanceToNow(new Date(offer.created_at))} ago by {creator.username || creator.wallet_address}
+                Created {formatDistanceToNow(new Date(offer.created_at))} ago by {creator.username || creator.wallet_address} | Last updated {formatDistanceToNow(new Date(offer.updated_at))} ago
               </CardDescription>
               <div className="mt-4">
                 <OfferDescription offer={offer} />
