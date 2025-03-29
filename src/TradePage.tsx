@@ -39,7 +39,13 @@ function TradePage() {
           setCreator(creatorResponse.data);
 
           // Fetch counterparty account (the other party in the trade)
-          if (tradeData.leg1_buyer_account_id) {
+          // Determine counterparty based on offer type
+          if (offerResponse.data.offer_type === "BUY") {
+            // For BUY offers, the counterparty is the seller
+            const counterpartyResponse = await getAccountById(tradeData.leg1_seller_account_id);
+            setCounterparty(counterpartyResponse.data);
+          } else if (offerResponse.data.offer_type === "SELL" && tradeData.leg1_buyer_account_id) {
+            // For SELL offers, the counterparty is the buyer
             const counterpartyResponse = await getAccountById(tradeData.leg1_buyer_account_id);
             setCounterparty(counterpartyResponse.data);
           }
