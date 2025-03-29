@@ -1,12 +1,14 @@
 import { Account } from "../api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface ParticipantCardProps {
   user: Account | null;
   role: string;
+  isCurrentUser?: boolean;
 }
 
-function ParticipantCard({ user, role }: ParticipantCardProps) {
+function ParticipantCard({ user, role, isCurrentUser = false }: ParticipantCardProps) {
   if (!user) return <p>Unknown {role}</p>;
 
   return (
@@ -18,7 +20,14 @@ function ParticipantCard({ user, role }: ParticipantCardProps) {
         </AvatarFallback>
       </Avatar>
       <div>
-        <p className="font-medium">{user.username || user.wallet_address}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium">{user.username || user.wallet_address}</p>
+          {isCurrentUser && (
+            <Badge variant="secondary" className="bg-[#6d28d9] text-white text-xs">
+              YOU
+            </Badge>
+          )}
+        </div>
         <p className="text-sm text-gray-500">User ID: {user.id}</p>
         {user.telegram_username && (
           <a
