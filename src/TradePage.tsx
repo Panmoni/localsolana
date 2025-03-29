@@ -41,14 +41,10 @@ function TradeDescription({ trade, offer, userRole }: TradeDescriptionProps) {
   const marketPosition = rateAdjustment > 1 ? "above" : rateAdjustment < 1 ? "below" : "at";
 
   return (
-    <div className="text-lg font-medium mb-4">
+    <div className="text-lg mb-4">
       <p>
-        You are {action} {formatNumber(parseFloat(trade.leg1_crypto_amount))} {token}
-        for {trade.leg1_fiat_amount ? formatNumber(parseFloat(trade.leg1_fiat_amount)) : 'N/A'} {trade.from_fiat_currency}
-        at {formatNumber(price)} {trade.from_fiat_currency}/{token}
-      </p>
-      <p className="mt-2">
-        This is{" "}
+        You are <strong>{action}</strong> {formatNumber(parseFloat(trade.leg1_crypto_amount))} {token} {""}
+        for {trade.leg1_fiat_amount ? formatNumber(parseFloat(trade.leg1_fiat_amount)) : 'N/A'} {trade.from_fiat_currency} {""} at {formatNumber(price)} {trade.from_fiat_currency}/{token}. {""} This is{" "}
         <span className={
           rateAdjustment > 1
             ? 'text-[#059669]'
@@ -58,11 +54,11 @@ function TradeDescription({ trade, offer, userRole }: TradeDescriptionProps) {
         }>
           {formatRate(rateAdjustment)}
         </span>{" "}
-        {marketPosition} market price
+        {marketPosition} the market price.
       </p>
       {offer?.terms && (
-        <p className="mt-2 text-sm text-neutral-600">
-          Terms: {offer.terms}
+        <p className="mt-2 text-neutral-600">
+          <strong>Terms</strong>: {offer.terms}
         </p>
       )}
     </div>
@@ -118,7 +114,7 @@ function TradeStatusDisplay({ state, userRole }: TradeStatusDisplayProps) {
   const message = stateMessages[state]?.[userRole] || "Unknown state";
 
   return (
-    <div className="mb-6">
+    <div>
       <div className="flex items-center justify-between mb-2">
         <StatusBadge className="text-xl py-2 px-4">{state}</StatusBadge>
         <p className="text-lg font-medium">{message}</p>
@@ -186,13 +182,13 @@ function StatusLog({ trade }: StatusLogProps) {
     <div className="space-y-2">
       {statusUpdates.length > 0 ? (
         statusUpdates.map((update, index) => (
-          <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+          <div key={index} className="flex justify-between items-center p-2 border border-gray-100 rounded-md mb-2 hover:bg-gray-50">
             <StatusBadge>{update.state}</StatusBadge>
             <span className="text-gray-500">{formatDate(update.timestamp)}</span>
           </div>
         ))
       ) : (
-        <p className="text-neutral-500 text-center">No status updates available</p>
+        <p className="text-neutral-500 text-center p-4 border border-gray-100 rounded-md">No status updates available</p>
       )}
     </div>
   );
@@ -291,21 +287,25 @@ function TradePage() {
   }
 
   return (
-    <div className="space-y-1">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
-        <div>
+    <div className="space-y-4">
+      {/* Combined Title and Trade Description */}
+      <Card className="border border-gray-200 shadow-sm p-4">
+        <CardHeader>
           <h1 className="text-2xl font-bold text-[#5b21b6]">
             Trade #{formatNumber(trade.id)}
           </h1>
           <p className="text-neutral-500">
-            Created {formatDate(trade.created_at)}
+            Created {new Date(trade.created_at).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            })} - <span className="text-gray-400">{formatDistanceToNow(new Date(trade.created_at))} ago</span>
           </p>
-        </div>
-      </div>
-
-      {/* Trade Description */}
-      <Card>
-        <CardContent className="pt-6">
+        </CardHeader>
+        <CardContent>
           {trade && offer && (
             <TradeDescription trade={trade} offer={offer} userRole={userRole} />
           )}
@@ -313,62 +313,35 @@ function TradePage() {
       </Card>
 
       {/* Enhanced Status Display */}
-      <TradeStatusDisplay state={trade.leg1_state} userRole={userRole} />
-
-      {/* Trade Details */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
-          <CardTitle className="text-[#5b21b6]">Trade Details</CardTitle>
-          <CardDescription>Information about this trade</CardDescription>
+          <CardTitle className="text-[#5b21b6]">Trade Status</CardTitle>
+          <CardDescription>Current status and progress of this trade</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-medium text-neutral-700">Crypto Amount</h3>
-              <p>{formatNumber(parseFloat(trade.leg1_crypto_amount))} {trade.leg1_crypto_token || offer?.token || "USDC"}</p>
-            </div>
-            <div>
-              <h3 className="font-medium text-neutral-700">Fiat Amount</h3>
-              <p>{trade.leg1_fiat_amount ? formatNumber(parseFloat(trade.leg1_fiat_amount)) : 'Not set'} {trade.from_fiat_currency}</p>
-            </div>
-            {trade.leg1_fiat_amount && (
-              <div>
-                <h3 className="font-medium text-neutral-700">Price</h3>
-                <p>{formatNumber(parseFloat(trade.leg1_fiat_amount) / parseFloat(trade.leg1_crypto_amount))} {trade.from_fiat_currency}/{trade.leg1_crypto_token || offer?.token || "USDC"}</p>
-              </div>
-            )}
-            <div>
-              <h3 className="font-medium text-neutral-700">From Currency</h3>
-              <p>{trade.from_fiat_currency}</p>
-            </div>
-            <div>
-              <h3 className="font-medium text-neutral-700">To Currency</h3>
-              <p>{trade.destination_fiat_currency}</p>
-            </div>
-            {trade.leg1_escrow_address && (
-              <div>
-                <h3 className="font-medium text-neutral-700">Escrow Address</h3>
-                <p className="text-sm break-all">{trade.leg1_escrow_address}</p>
-              </div>
-            )}
-          </div>
+        <CardContent>
+          <TradeStatusDisplay state={trade.leg1_state} userRole={userRole} />
         </CardContent>
       </Card>
 
+
       {/* Participants */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
           <CardTitle className="text-[#5b21b6]">Participants</CardTitle>
           <CardDescription>People involved in this trade</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ParticipantCard user={creator} role="Offer Creator" />
-          <ParticipantCard user={counterparty} role="Counterparty" />
+          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            <ParticipantCard user={creator} role="Offer Creator" />
+          </div>
+          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            <ParticipantCard user={counterparty} role="Counterparty" />
+          </div>
         </CardContent>
       </Card>
 
       {/* Status Log */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
           <CardTitle className="text-[#5b21b6]">Status Log</CardTitle>
           <CardDescription>History of trade status updates</CardDescription>
@@ -379,7 +352,7 @@ function TradePage() {
       </Card>
 
       {/* Related Offer with Link */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
           <CardTitle className="text-[#5b21b6]">Source Offer</CardTitle>
           <CardDescription>The offer this trade is based on</CardDescription>
@@ -387,15 +360,15 @@ function TradePage() {
         <CardContent className="space-y-4">
           {offer ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
                 <h3 className="font-medium text-neutral-700">Offer Type</h3>
                 <p>{offer.offer_type}</p>
               </div>
-              <div>
+              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
                 <h3 className="font-medium text-neutral-700">Amount Range</h3>
                 <p>{formatNumber(offer.min_amount)} - {formatNumber(offer.max_amount)} {offer.token}</p>
               </div>
-              <div>
+              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
                 <h3 className="font-medium text-neutral-700">Rate Adjustment</h3>
                 <p>{offer.rate_adjustment > 1
                     ? `+${((offer.rate_adjustment - 1) * 100).toFixed(2)}%`
@@ -403,7 +376,7 @@ function TradePage() {
                       ? `-${((1 - offer.rate_adjustment) * 100).toFixed(2)}%`
                       : "0%"}</p>
               </div>
-              <div>
+              <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
                 <h3 className="font-medium text-neutral-700">Currency</h3>
                 <p>{offer.fiat_currency}</p>
               </div>
@@ -425,13 +398,13 @@ function TradePage() {
       </Card>
 
       {/* Chat Section */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
           <CardTitle className="text-[#5b21b6]">Chat</CardTitle>
           <CardDescription>Communicate with your trading partner</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-4">
+          <div className="text-center py-4 border border-gray-100 rounded-md p-4">
             <p className="text-neutral-500 mb-4">Chat functionality coming soon</p>
             {counterparty?.telegram_username && (
               <Button
@@ -449,7 +422,7 @@ function TradePage() {
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-end">
+      <div className="flex justify-end p-4 border border-gray-200 rounded-lg shadow-sm">
         <Button
           onClick={() => navigate("/")}
           variant="outline"
