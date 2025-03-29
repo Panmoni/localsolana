@@ -1,15 +1,27 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { getTradeById as getTrade, getAccountById, getOfferById, Trade, Offer, Account } from "./api";
+import {
+  getTradeById as getTrade,
+  getAccountById,
+  getOfferById,
+  markTradeFiatPaid,
+  createEscrow,
+  releaseEscrow,
+  cancelEscrow,
+  disputeEscrow,
+  Trade,
+  Offer,
+  Account
+} from "./api";
 import { formatNumber } from "./lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
-import StatusBadge from "./components/StatusBadge";
-import { Progress } from "@/components/ui/progress";
 import ParticipantCard from "./components/ParticipantCard";
+import TradeStatusDisplay from "./components/TradeStatusDisplay";
+import { useTradeUpdates } from "./hooks/useTradeUpdates";
 
 
 // Trade Description Component
@@ -134,66 +146,6 @@ function TradeDescription({ trade, offer, userRole, creator, counterparty }: Tra
   );
 }
 
-// Trade Status Display Component
-interface TradeStatusDisplayProps {
-  state: string;
-  userRole: 'buyer' | 'seller';
-}
-
-function TradeStatusDisplay({ state, userRole }: TradeStatusDisplayProps) {
-  // Map states to progress percentages
-  const stateToProgress: Record<string, number> = {
-    'CREATED': 10,
-    'AWAITING_FIAT_PAYMENT': 30,
-    'PENDING_CRYPTO_RELEASE': 60,
-    'DISPUTED': 70,
-    'COMPLETED': 100,
-    'CANCELLED': 0
-  };
-
-  // Map states to user-friendly messages based on role
-  const stateMessages: Record<string, Record<string, string>> = {
-    'CREATED': {
-      buyer: "Waiting for seller to create escrow",
-      seller: "Waiting on you to create escrow"
-    },
-    'AWAITING_FIAT_PAYMENT': {
-      buyer: "Waiting on you to make fiat payment",
-      seller: "Waiting for buyer to make fiat payment"
-    },
-    'PENDING_CRYPTO_RELEASE': {
-      buyer: "Waiting for seller to release crypto",
-      seller: "Waiting on you to release crypto"
-    },
-    'DISPUTED': {
-      buyer: "Trade is under dispute",
-      seller: "Trade is under dispute"
-    },
-    'COMPLETED': {
-      buyer: "Trade completed successfully",
-      seller: "Trade completed successfully"
-    },
-    'CANCELLED': {
-      buyer: "Trade was cancelled",
-      seller: "Trade was cancelled"
-    }
-  };
-
-  const progress = stateToProgress[state] || 0;
-  const message = stateMessages[state]?.[userRole] || "Unknown state";
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <StatusBadge className="text-xl py-2 px-4">{state}</StatusBadge>
-        <p className="text-lg font-medium">{message}</p>
-      </div>
-      <Progress value={progress} className="h-4" />
-    </div>
-  );
-}
-
-
 
 function TradePage() {
   const { id } = useParams<{ id: string }>();
@@ -206,6 +158,145 @@ function TradePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Use the SSE hook to get real-time updates
+  const { trade: tradeUpdates } = useTradeUpdates(id ? parseInt(id) : 0);
+
+  // Update trade data when we receive updates via SSE
+  useEffect(() => {
+    if (tradeUpdates) {
+      setTrade(tradeUpdates);
+    }
+  }, [tradeUpdates]);
+
+  // Action handlers for trade status actions
+  const handleCreateEscrow = async () => {
+    if (!trade || !primaryWallet?.address) return;
+
+    setActionLoading(true);
+    try {
+      // Determine buyer and seller addresses
+      const sellerAddress = userRole === 'seller' ? primaryWallet.address : counterparty?.wallet_address;
+      const buyerAddress = userRole === 'buyer' ? primaryWallet.address : counterparty?.wallet_address;
+
+      if (!sellerAddress || !buyerAddress) {
+        throw new Error("Missing wallet addresses");
+      }
+
+      // Call API to create escrow
+      await createEscrow({
+        trade_id: trade.id,
+        escrow_id: trade.id, // Using trade ID as escrow ID for simplicity
+        seller: sellerAddress,
+        buyer: buyerAddress,
+        amount: parseFloat(trade.leg1_crypto_amount)
+      });
+
+      // Refresh trade data
+      const updatedTrade = await getTrade(trade.id);
+      setTrade(updatedTrade.data);
+    } catch (err) {
+      console.error("Error creating escrow:", err);
+      setError(err instanceof Error ? err.message : "Failed to create escrow");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleMarkFiatPaid = async () => {
+    if (!trade) return;
+
+    setActionLoading(true);
+    try {
+      // Call API to mark fiat as paid
+      await markTradeFiatPaid(trade.id);
+
+      // Refresh trade data
+      const updatedTrade = await getTrade(trade.id);
+      setTrade(updatedTrade.data);
+    } catch (err) {
+      console.error("Error marking fiat as paid:", err);
+      setError(err instanceof Error ? err.message : "Failed to mark fiat as paid");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReleaseCrypto = async () => {
+    if (!trade || !primaryWallet?.address) return;
+
+    setActionLoading(true);
+    try {
+      // Call API to release escrow
+      // Note: This is a simplified version, in a real implementation you would need to provide
+      // all the required parameters like buyer_token_account and arbitrator_token_account
+      await releaseEscrow({
+        escrow_id: trade.id,
+        trade_id: trade.id,
+        authority: primaryWallet.address,
+        buyer_token_account: "placeholder", // This would come from the wallet
+        arbitrator_token_account: "placeholder" // This would be a system account
+      });
+
+      // Refresh trade data
+      const updatedTrade = await getTrade(trade.id);
+      setTrade(updatedTrade.data);
+    } catch (err) {
+      console.error("Error releasing crypto:", err);
+      setError(err instanceof Error ? err.message : "Failed to release crypto");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDisputeTrade = async () => {
+    if (!trade || !primaryWallet?.address) return;
+
+    setActionLoading(true);
+    try {
+      // Call API to dispute escrow
+      await disputeEscrow({
+        escrow_id: trade.id,
+        trade_id: trade.id,
+        disputing_party: primaryWallet.address,
+        disputing_party_token_account: "placeholder" // This would come from the wallet
+      });
+
+      // Refresh trade data
+      const updatedTrade = await getTrade(trade.id);
+      setTrade(updatedTrade.data);
+    } catch (err) {
+      console.error("Error disputing trade:", err);
+      setError(err instanceof Error ? err.message : "Failed to dispute trade");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelTrade = async () => {
+    if (!trade || !primaryWallet?.address) return;
+
+    setActionLoading(true);
+    try {
+      // Call API to cancel escrow
+      await cancelEscrow({
+        escrow_id: trade.id,
+        trade_id: trade.id,
+        seller: userRole === 'seller' ? primaryWallet.address : counterparty?.wallet_address || "",
+        authority: primaryWallet.address
+      });
+
+      // Refresh trade data
+      const updatedTrade = await getTrade(trade.id);
+      setTrade(updatedTrade.data);
+    } catch (err) {
+      console.error("Error cancelling trade:", err);
+      setError(err instanceof Error ? err.message : "Failed to cancel trade");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchTradeDetails = async () => {
@@ -327,7 +418,16 @@ function TradePage() {
           <CardDescription>Current status and progress of this trade</CardDescription>
         </CardHeader>
         <CardContent>
-          <TradeStatusDisplay state={trade.leg1_state} userRole={userRole} />
+          <TradeStatusDisplay
+            trade={trade}
+            userRole={userRole}
+            onCreateEscrow={handleCreateEscrow}
+            onMarkFiatPaid={handleMarkFiatPaid}
+            onReleaseCrypto={handleReleaseCrypto}
+            onDisputeTrade={handleDisputeTrade}
+            onCancelTrade={handleCancelTrade}
+            loading={actionLoading}
+          />
         </CardContent>
       </Card>
 
