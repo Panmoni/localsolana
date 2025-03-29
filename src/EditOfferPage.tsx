@@ -34,6 +34,9 @@ function EditOfferPage() {
     fiat_currency: "USD",
   });
 
+  // Store the raw percentage input value separately to preserve user input exactly
+  const [rateAdjustmentInput, setRateAdjustmentInput] = useState("0.00");
+
   useEffect(() => {
     const fetchOffer = async () => {
       if (!id) return;
@@ -57,6 +60,9 @@ function EditOfferPage() {
           fiat_currency: offerData.fiat_currency,
         });
 
+        // Set the rate adjustment input value
+        setRateAdjustmentInput(((offerData.rate_adjustment - 1) * 100).toFixed(2));
+
         setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -76,6 +82,9 @@ function EditOfferPage() {
     if (name === "min_amount" || name === "max_amount" || name === "total_available_amount") {
       setFormData({ ...formData, [name]: parseFloat(value) || 0 });
     } else if (name === "rate_adjustment") {
+      // Store the exact input value
+      setRateAdjustmentInput(value);
+
       // Convert percentage input to rate factor (e.g., 5% -> 1.05, -3% -> 0.97)
       const percentValue = parseFloat(value) || 0;
       const rateFactor = 1 + percentValue / 100;
@@ -107,10 +116,7 @@ function EditOfferPage() {
     }
   };
 
-  // Helper function to convert rate factor to percentage for display
-  const rateToPercentage = (rate: number) => {
-    return ((rate - 1) * 100).toFixed(2);
-  };
+  // No longer needed as we're using direct input value
 
   if (loading) {
     return (
@@ -243,9 +249,8 @@ function EditOfferPage() {
                   <Input
                     type="number"
                     name="rate_adjustment"
-                    value={rateToPercentage(formData.rate_adjustment || 1)}
+                    value={rateAdjustmentInput}
                     onChange={handleChange}
-                    step="0.01"
                     required
                   />
                   <p className="text-xs text-neutral-500 mt-1">
