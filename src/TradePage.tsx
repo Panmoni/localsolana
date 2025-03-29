@@ -11,11 +11,6 @@ import StatusBadge from "./components/StatusBadge";
 import { Progress } from "@/components/ui/progress";
 import ParticipantCard from "./components/ParticipantCard";
 
-// Helper function for formatting dates
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return `${date.toLocaleDateString()} (${formatDistanceToNow(date)} ago)`;
-};
 
 // Trade Description Component
 interface TradeDescriptionProps {
@@ -199,74 +194,6 @@ function TradeStatusDisplay({ state, userRole }: TradeStatusDisplayProps) {
 }
 
 
-// Status Log Component
-interface StatusLogProps {
-  trade: Trade;
-}
-
-function StatusLog({ trade }: StatusLogProps) {
-  // Create a status log based on available timestamps
-  const statusUpdates = [];
-
-  if (trade.created_at) {
-    statusUpdates.push({ state: "CREATED", timestamp: trade.created_at });
-  }
-
-  if (trade.leg1_escrow_deposit_deadline) {
-    statusUpdates.push({
-      state: "ESCROW DEADLINE SET",
-      timestamp: trade.leg1_escrow_deposit_deadline
-    });
-  }
-
-  if (trade.leg1_fiat_payment_deadline) {
-    statusUpdates.push({
-      state: "AWAITING_FIAT_PAYMENT",
-      timestamp: trade.leg1_fiat_payment_deadline
-    });
-  }
-
-  if (trade.leg1_fiat_paid_at) {
-    statusUpdates.push({
-      state: "FIAT PAYMENT CONFIRMED",
-      timestamp: trade.leg1_fiat_paid_at
-    });
-  }
-
-  if (trade.leg1_released_at) {
-    statusUpdates.push({
-      state: "COMPLETED",
-      timestamp: trade.leg1_released_at
-    });
-  }
-
-  if (trade.leg1_cancelled_at) {
-    statusUpdates.push({
-      state: "CANCELLED",
-      timestamp: trade.leg1_cancelled_at
-    });
-  }
-
-  // Sort by timestamp
-  statusUpdates.sort((a, b) =>
-    new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
-
-  return (
-    <div className="space-y-2">
-      {statusUpdates.length > 0 ? (
-        statusUpdates.map((update, index) => (
-          <div key={index} className="flex justify-between items-center p-2 border border-gray-100 rounded-md mb-2 hover:bg-gray-50">
-            <StatusBadge>{update.state}</StatusBadge>
-            <span className="text-gray-500">{formatDate(update.timestamp)}</span>
-          </div>
-        ))
-      ) : (
-        <p className="text-neutral-500 text-center p-4 border border-gray-100 rounded-md">No status updates available</p>
-      )}
-    </div>
-  );
-}
 
 function TradePage() {
   const { id } = useParams<{ id: string }>();
@@ -404,16 +331,6 @@ function TradePage() {
         </CardContent>
       </Card>
 
-      {/* Status Log */}
-      <Card className="border border-gray-200 shadow-sm p-4">
-        <CardHeader>
-          <CardTitle className="text-[#5b21b6]">Status Log</CardTitle>
-          <CardDescription>History of trade status updates</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <StatusLog trade={trade} />
-        </CardContent>
-      </Card>
 
       {/* Source Offer box removed */}
 
@@ -471,7 +388,7 @@ function TradePage() {
           onClick={() => navigate("/trades")}
           className="bg-[#6d28d9] hover:bg-[#5b21b6] text-white"
         >
-          View All Trades
+          View All My Trades
         </Button>
       </div>
     </div>
