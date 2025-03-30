@@ -4,6 +4,8 @@ A Vite + React frontend for the [LocalSolana](https://LocalSolana.com/) P2P trad
 
 This repository serves as the user interface for LocalSolana, a decentralized peer-to-peer (P2P) exchange and remittances marketplace designed to facilitate secure, borderless cryptocurrency trading with fiat on-ramps and off-ramps.
 
+![LocalSolana logo](https://raw.githubusercontent.com/Panmoni/localsolana/refs/heads/main/public/logo.png)
+
 ## Overview
 
 ### The Big Picture
@@ -16,7 +18,7 @@ LocalSolana is a Solana dapp for P2P trading and remittances. Our mission is to 
 - **Economic Empowerment**: By facilitating low-cost, censorship-resistant fiat-to-fiat transactions, we enable families to access basic needs, support entrepreneurship and drive economic growth in underserved markets.
 - **Decentralized Future**: Unlike Web2 platforms, we’re building a truly community-owned network, evolving with its users to transform developing economies into vibrant, connected markets.
 
-#### Remittance Vision
+#### Remittances Vision
 LocalSolana reimagines remittances by allowing users to chain together P2P trades into seamless fiat-in, fiat-out transactions. Traders use USDC as a fast, low-cost transport layer, while senders and receivers interact solely in their preferred fiat currencies—no crypto knowledge required. This approach eliminates intermediaries, reduces fees and provides crisis-resilient access to funds. Beyond cash transfers, we aim to support "combo remittances," where senders can buy essentials (e.g., groceries, medicine) cross-border for their loved ones from local merchants for direct delivery to recipients, enhancing economic impact.
 
 ### Key Features
@@ -28,7 +30,7 @@ LocalSolana reimagines remittances by allowing users to chain together P2P trade
 
 ### LocalSolana Background
 
-A product under the name LocalSolana was first developed by OpenPeer Labs before the company suddenly ceased operations in Feb 2025. Also, in Feb 2025, I, George Donnelly, acquired the LocalSolana IP from OpenPeer Labs. Starting in Mar 2025, I am re-developing from scratch LocalSolana without using any of the previous code. This new LocalSolana codebase has not only traditional P2P trading features with on-chain escrow, but also the YapBay sequential escrow system in order to support P2P, fiat-in, fiat-out remittances functionality.
+A product under the name LocalSolana was first developed by OpenPeer Labs before the company suddenly ceased operations in Feb 2025. Also, in Feb 2025, I, [George Donnelly](https://github.com/georgedonnelly), acquired the LocalSolana IP from OpenPeer Labs. Starting in Mar 2025, I am re-developing from scratch LocalSolana without using any of the previous code. This new LocalSolana codebase has not only traditional P2P trading features with on-chain escrow, but also the [YapBay sequential escrow system](https://yapbay.com/about/) in order to support P2P, fiat-in, fiat-out remittances functionality.
 
 ## System Architecture
 
