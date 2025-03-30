@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Trade } from '@/api';
 
 export function useTradeUpdates(tradeId: number, apiUrl?: string, pollInterval = 5000) {
@@ -7,7 +7,8 @@ export function useTradeUpdates(tradeId: number, apiUrl?: string, pollInterval =
   const [isConnected, setIsConnected] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchTrade = async () => {
+  // Wrap fetchTrade with useCallback to memoize it
+  const fetchTrade = useCallback(async () => {
     if (!tradeId) return;
 
     const baseUrl = apiUrl || import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -37,7 +38,7 @@ export function useTradeUpdates(tradeId: number, apiUrl?: string, pollInterval =
       setError(err instanceof Error ? err : new Error('Fetch error'));
       setIsConnected(false);
     }
-  };
+  }, [tradeId, apiUrl]); // Add dependencies that fetchTrade relies on
 
   useEffect(() => {
     if (!tradeId) return;
@@ -54,7 +55,7 @@ export function useTradeUpdates(tradeId: number, apiUrl?: string, pollInterval =
         clearInterval(pollingRef.current);
       }
     };
-  }, [tradeId, apiUrl, pollInterval]);
+  }, [tradeId, apiUrl, pollInterval, fetchTrade]); // Add fetchTrade as a dependency
 
   return { trade, error, isConnected };
 }

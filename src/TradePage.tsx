@@ -10,11 +10,11 @@ import {
   releaseEscrow,
   cancelEscrow,
   disputeEscrow,
-  getAccount,
   Trade,
   Offer,
   Account
 } from "./api";
+import { useUserRole } from "./hooks/useUserRole";
 import { formatNumber } from "./lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -143,64 +143,10 @@ function TradePage() {
   const [counterparty, setCounterparty] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
   const [actionLoading, setActionLoading] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
-  /**
-   * Determines the user's role in a trade by comparing the current user's account ID
-   * with the trade's seller and buyer account IDs
-   * @param trade - The trade object containing buyer and seller information
-   * @param offer - The related offer (optional)
-   * @returns {'buyer' | 'seller'} - The user's role in the trade
-   */
-  const getUserRoleInTrade = async (trade: Trade, offer?: Offer | null): Promise<'buyer' | 'seller'> => {
-    try {
-      // Get the current user's account
-      let userAccountToUse = currentAccount;
-
-      if (!userAccountToUse) {
-        const accountResponse = await getAccount();
-        const userAccount = accountResponse.data;
-        setCurrentAccount(userAccount);
-        userAccountToUse = userAccount; // Use the fetched account directly
-
-        console.log("[userRole] Current user account ID:", userAccount.id);
-        console.log("[userRole] Trade seller account ID:", trade.leg1_seller_account_id);
-        console.log("[userRole] Trade buyer account ID:", trade.leg1_buyer_account_id);
-      }
-
-      // Determine user role based on account IDs using the local variable
-      const isSeller = userAccountToUse?.id === trade.leg1_seller_account_id;
-      const userRole = isSeller ? 'seller' : 'buyer';
-
-      console.log("[userRole] currentAccount:", userAccountToUse);
-      console.log(`[userRole] User role determined: ${userRole}`);
-
-      // If offer is provided, determine the other party based on offer type and user role
-      if (offer) {
-        // For BUY offers: creator is buyer, counterparty is seller
-        // For SELL offers: creator is seller, counterparty is buyer
-        let otherPartyRole: 'buyer' | 'seller';
-
-        if (userRole === 'buyer') {
-          // Current user is buyer, so other party is seller
-          otherPartyRole = 'seller';
-        } else {
-          // Current user is seller, so other party is buyer
-          otherPartyRole = 'buyer';
-        }
-
-        console.log(`Other party role determined: ${otherPartyRole}`);
-      }
-
-      return userRole;
-    } catch (error) {
-      console.error("Error determining user role:", error);
-      // Default to buyer if there's an error
-      return 'buyer';
-    }
-  };
+  // Use our custom hook to determine user role
+  const { userRole } = useUserRole(trade);
 
 
   // Use polling to get trade updates
@@ -212,15 +158,10 @@ function TradePage() {
       setTrade(tradeUpdates);
       console.log(`Trade updated - Current state: ${tradeUpdates.leg1_state}, User role: ${userRole}`);
 
-      // Update user role when trade updates
-      const updateUserRole = async () => {
-        const role = await getUserRoleInTrade(tradeUpdates);
-        setUserRole(role);
-      };
-
-      updateUserRole();
+      // No need to update user role manually - the useUserRole hook handles this automatically
+      // when the trade state changes
     }
-  }, [tradeUpdates]);
+  }, [tradeUpdates, userRole]);
 
   // Action handlers for trade status actions
   const handleCreateEscrow = async () => {
@@ -382,15 +323,7 @@ function TradePage() {
             setCounterparty(counterpartyResponse.data);
           }
 
-          // Get current user account and determine role
-          const accountResponse = await getAccount();
-          const userAccount = accountResponse.data;
-          setCurrentAccount(userAccount);
-
-          // Determine user role using our helper function
-          const role = await getUserRoleInTrade(tradeData);
-          setUserRole(role);
-          console.log(`User role determined: ${role}`);
+          // No need to manually determine user role - the useUserRole hook handles this
           console.log(`Trade state: ${tradeData.leg1_state}`);
         }
 
@@ -404,7 +337,7 @@ function TradePage() {
     };
 
     fetchTradeDetails();
-  }, [id]);
+  }, [id]); // No need for getUserRoleInTrade dependency
 
   if (loading) {
     return (
