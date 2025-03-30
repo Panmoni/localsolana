@@ -144,8 +144,8 @@ function TradePage() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Use our custom hook to determine user role and counterparty
-  const { userRole, counterparty } = useTradeParticipants(trade);
+  // Use our custom hook to determine user role, current account, and counterparty
+  const { userRole, currentAccount, counterparty } = useTradeParticipants(trade);
 
 
   // Use polling to get trade updates
@@ -450,14 +450,19 @@ function TradePage() {
             <ParticipantCard
               user={creator}
               role="Offer Creator"
-              isCurrentUser={primaryWallet?.address?.toLowerCase() === creator?.wallet_address?.toLowerCase()}
+              isCurrentUser={currentAccount?.id === creator?.id}
+              isOfferCreator={true}
+              isBuyer={offer?.offer_type === "BUY"}
+              isSeller={offer?.offer_type === "SELL"}
             />
           </div>
           <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
             <ParticipantCard
               user={counterparty}
-              role="Counterparty"
-              isCurrentUser={primaryWallet?.address?.toLowerCase() === counterparty?.wallet_address?.toLowerCase()}
+              role={userRole === 'buyer' ? "Seller" : "Buyer"}
+              isCurrentUser={currentAccount?.id === counterparty?.id}
+              isBuyer={userRole === 'seller'} // If current user is seller, counterparty is buyer
+              isSeller={userRole === 'buyer'} // If current user is buyer, counterparty is seller
             />
           </div>
         </CardContent>

@@ -6,9 +6,19 @@ interface ParticipantCardProps {
   user: Account | null;
   role: string;
   isCurrentUser?: boolean;
+  isBuyer?: boolean;
+  isSeller?: boolean;
+  isOfferCreator?: boolean;
 }
 
-function ParticipantCard({ user, role, isCurrentUser = false }: ParticipantCardProps) {
+function ParticipantCard({
+  user,
+  role,
+  isCurrentUser = false,
+  isBuyer = false,
+  isSeller = false,
+  isOfferCreator = false
+}: ParticipantCardProps) {
   if (!user) return <p>Unknown {role}</p>;
 
   return (
@@ -20,11 +30,26 @@ function ParticipantCard({ user, role, isCurrentUser = false }: ParticipantCardP
         </AvatarFallback>
       </Avatar>
       <div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <p className="font-medium">{user.username || user.wallet_address}</p>
           {isCurrentUser && (
             <Badge variant="secondary" className="bg-[#6d28d9] text-white text-xs">
               YOU
+            </Badge>
+          )}
+          {isBuyer && (
+            <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">
+              BUYER
+            </Badge>
+          )}
+          {isSeller && (
+            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 text-xs">
+              SELLER
+            </Badge>
+          )}
+          {isOfferCreator && (
+            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">
+              OFFER CREATOR
             </Badge>
           )}
         </div>
