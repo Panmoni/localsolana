@@ -140,6 +140,8 @@ function TradePage() {
   const [trade, setTrade] = useState<Trade | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [creator, setCreator] = useState<Account | null>(null);
+  const [buyerAccount, setBuyerAccount] = useState<Account | null>(null);
+  const [sellerAccount, setSellerAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -310,7 +312,23 @@ function TradePage() {
           const creatorResponse = await getAccountById(offerResponse.data.creator_account_id);
           setCreator(creatorResponse.data);
 
-          // No need to manually determine counterparty - the useTradeParticipants hook handles this
+          console.log("[DEBUG] Offer creator ID:", offerResponse.data.creator_account_id);
+          console.log("[DEBUG] Trade buyer ID:", tradeData.leg1_buyer_account_id);
+          console.log("[DEBUG] Trade seller ID:", tradeData.leg1_seller_account_id);
+
+          // Fetch buyer account
+          if (tradeData.leg1_buyer_account_id) {
+            const buyerResponse = await getAccountById(tradeData.leg1_buyer_account_id);
+            setBuyerAccount(buyerResponse.data);
+            console.log("[DEBUG] Fetched buyer account:", buyerResponse.data);
+          }
+
+          // Fetch seller account
+          if (tradeData.leg1_seller_account_id) {
+            const sellerResponse = await getAccountById(tradeData.leg1_seller_account_id);
+            setSellerAccount(sellerResponse.data);
+            console.log("[DEBUG] Fetched seller account:", sellerResponse.data);
+          }
 
           // No need to manually determine user role - the useUserRole hook handles this
           console.log(`Trade state: ${tradeData.leg1_state}`);
@@ -446,23 +464,43 @@ function TradePage() {
           <CardDescription>People involved in this trade</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Show buyer */}
           <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            {(() => {
+              console.log("[DEBUG] Rendering buyer card:", {
+                buyerAccount,
+                currentAccountId: currentAccount?.id,
+                userRole,
+                isCreatorBuyer: creator?.id === trade.leg1_buyer_account_id
+              });
+              return null;
+            })()}
             <ParticipantCard
-              user={creator}
-              role="Offer Creator"
-              isCurrentUser={currentAccount?.id === creator?.id}
-              isOfferCreator={true}
-              isBuyer={offer?.offer_type === "BUY"}
-              isSeller={offer?.offer_type === "SELL"}
+              user={buyerAccount}
+              role="Buyer"
+              isCurrentUser={currentAccount?.id === buyerAccount?.id}
+              isOfferCreator={creator?.id === buyerAccount?.id}
+              isBuyer={true}
             />
           </div>
+
+          {/* Show seller */}
           <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
+            {(() => {
+              console.log("[DEBUG] Rendering seller card:", {
+                sellerAccount,
+                currentAccountId: currentAccount?.id,
+                userRole,
+                isCreatorSeller: creator?.id === trade.leg1_seller_account_id
+              });
+              return null;
+            })()}
             <ParticipantCard
-              user={counterparty}
-              role={userRole === 'buyer' ? "Seller" : "Buyer"}
-              isCurrentUser={currentAccount?.id === counterparty?.id}
-              isBuyer={userRole === 'seller'} // If current user is seller, counterparty is buyer
-              isSeller={userRole === 'buyer'} // If current user is buyer, counterparty is seller
+              user={sellerAccount}
+              role="Seller"
+              isCurrentUser={currentAccount?.id === sellerAccount?.id}
+              isOfferCreator={creator?.id === sellerAccount?.id}
+              isSeller={true}
             />
           </div>
         </CardContent>
