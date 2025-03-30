@@ -15,13 +15,13 @@ import {
   Account
 } from "./api";
 import ChatSection from "./components/ChatSection";
+import ParticipantsSection from "./components/ParticipantsSection";
 import { useTradeParticipants } from "./hooks/useTradeParticipants";
 import { formatNumber } from "./lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
-import ParticipantCard from "./components/ParticipantCard";
 import TradeStatusDisplay from "./components/TradeStatusDisplay";
 import { useTradeUpdates } from "./hooks/useTradeUpdates";
 
@@ -434,53 +434,14 @@ function TradePage() {
       <ChatSection counterparty={counterparty} />
 
       {/* Participants */}
-      <Card className="border border-gray-200 shadow-sm p-4">
-        <CardHeader>
-          <CardTitle className="text-[#5b21b6]">Participants</CardTitle>
-          <CardDescription>People involved in this trade</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Show buyer */}
-          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-            {(() => {
-              console.log("[DEBUG] Rendering buyer card:", {
-                buyerAccount,
-                currentAccountId: currentAccount?.id,
-                userRole,
-                isCreatorBuyer: creator?.id === trade.leg1_buyer_account_id
-              });
-              return null;
-            })()}
-            <ParticipantCard
-              user={buyerAccount}
-              role="Buyer"
-              isCurrentUser={currentAccount?.id === buyerAccount?.id}
-              isOfferCreator={creator?.id === buyerAccount?.id}
-              isBuyer={true}
-            />
-          </div>
-
-          {/* Show seller */}
-          <div className="p-3 border border-gray-100 rounded-md hover:bg-gray-50">
-            {(() => {
-              console.log("[DEBUG] Rendering seller card:", {
-                sellerAccount,
-                currentAccountId: currentAccount?.id,
-                userRole,
-                isCreatorSeller: creator?.id === trade.leg1_seller_account_id
-              });
-              return null;
-            })()}
-            <ParticipantCard
-              user={sellerAccount}
-              role="Seller"
-              isCurrentUser={currentAccount?.id === sellerAccount?.id}
-              isOfferCreator={creator?.id === sellerAccount?.id}
-              isSeller={true}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <ParticipantsSection
+        buyerAccount={buyerAccount}
+        sellerAccount={sellerAccount}
+        currentAccount={currentAccount}
+        creator={creator}
+        trade={trade}
+        userRole={userRole}
+      />
 
       {/* Navigation Buttons */}
       <div className="flex justify-end p-4">
