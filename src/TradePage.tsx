@@ -10,6 +10,7 @@ import {
   releaseEscrow,
   cancelEscrow,
   disputeEscrow,
+  getAccount,
   Trade,
   Offer,
   Account
@@ -23,17 +24,15 @@ import ParticipantCard from "./components/ParticipantCard";
 import TradeStatusDisplay from "./components/TradeStatusDisplay";
 import { useTradeUpdates } from "./hooks/useTradeUpdates";
 
-
 // Trade Description Component
 interface TradeDescriptionProps {
   trade: Trade;
   offer: Offer | null;
   userRole: 'buyer' | 'seller';
-  creator: Account | null;
   counterparty: Account | null;
 }
 
-function TradeDescription({ trade, offer, userRole, creator, counterparty }: TradeDescriptionProps) {
+function TradeDescription({ trade, offer, userRole, counterparty }: TradeDescriptionProps) {
   // Calculate price from crypto and fiat amounts
   const price = trade.leg1_fiat_amount && trade.leg1_crypto_amount
     ? parseFloat(trade.leg1_fiat_amount) / parseFloat(trade.leg1_crypto_amount)
@@ -44,21 +43,8 @@ function TradeDescription({ trade, offer, userRole, creator, counterparty }: Tra
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(2)}%`;
     return "0%";
   };
-
-  // Simple logic based on user role:
-  // If current user is buyer, show seller; if current user is seller, show buyer
-  let otherParty;
-
-  // For BUY offers: creator is buyer, counterparty is seller
-  // For SELL offers: creator is seller, counterparty is buyer
-  if (userRole === 'buyer') {
-    // Current user is buyer, so show seller
-    otherParty = offer?.offer_type === 'BUY' ? creator : counterparty;
-  } else {
-    // Current user is seller, so show buyer
-    otherParty = offer?.offer_type === 'SELL' ? creator : counterparty;
-  }
-
+  // The other party is the counterparty
+  const otherParty = counterparty;
   const otherPartyRole = "Counterparty";
 
   // Abbreviate wallet address if available
@@ -159,14 +145,80 @@ function TradePage() {
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
   const [actionLoading, setActionLoading] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
-  // Use the SSE hook to get real-time updates
+  /**
+   * Determines the user's role in a trade by comparing the current user's account ID
+   * with the trade's seller and buyer account IDs
+   * @param trade - The trade object containing buyer and seller information
+   * @param offer - The related offer (optional)
+   * @returns {'buyer' | 'seller'} - The user's role in the trade
+   */
+  const getUserRoleInTrade = async (trade: Trade, offer?: Offer | null): Promise<'buyer' | 'seller'> => {
+    try {
+      // Get the current user's account
+      let userAccountToUse = currentAccount;
+
+      if (!userAccountToUse) {
+        const accountResponse = await getAccount();
+        const userAccount = accountResponse.data;
+        setCurrentAccount(userAccount);
+        userAccountToUse = userAccount; // Use the fetched account directly
+
+        console.log("[userRole] Current user account ID:", userAccount.id);
+        console.log("[userRole] Trade seller account ID:", trade.leg1_seller_account_id);
+        console.log("[userRole] Trade buyer account ID:", trade.leg1_buyer_account_id);
+      }
+
+      // Determine user role based on account IDs using the local variable
+      const isSeller = userAccountToUse?.id === trade.leg1_seller_account_id;
+      const userRole = isSeller ? 'seller' : 'buyer';
+
+      console.log("[userRole] currentAccount:", userAccountToUse);
+      console.log(`[userRole] User role determined: ${userRole}`);
+
+      // If offer is provided, determine the other party based on offer type and user role
+      if (offer) {
+        // For BUY offers: creator is buyer, counterparty is seller
+        // For SELL offers: creator is seller, counterparty is buyer
+        let otherPartyRole: 'buyer' | 'seller';
+
+        if (userRole === 'buyer') {
+          // Current user is buyer, so other party is seller
+          otherPartyRole = 'seller';
+        } else {
+          // Current user is seller, so other party is buyer
+          otherPartyRole = 'buyer';
+        }
+
+        console.log(`Other party role determined: ${otherPartyRole}`);
+      }
+
+      return userRole;
+    } catch (error) {
+      console.error("Error determining user role:", error);
+      // Default to buyer if there's an error
+      return 'buyer';
+    }
+  };
+
+
+  // Use polling to get trade updates
   const { trade: tradeUpdates } = useTradeUpdates(id ? parseInt(id) : 0);
 
-  // Update trade data when we receive updates via SSE
+  // Update trade data when we receive updates via polling
   useEffect(() => {
     if (tradeUpdates) {
       setTrade(tradeUpdates);
+      console.log(`Trade updated - Current state: ${tradeUpdates.leg1_state}, User role: ${userRole}`);
+
+      // Update user role when trade updates
+      const updateUserRole = async () => {
+        const role = await getUserRoleInTrade(tradeUpdates);
+        setUserRole(role);
+      };
+
+      updateUserRole();
     }
   }, [tradeUpdates]);
 
@@ -324,21 +376,22 @@ function TradePage() {
             // For BUY offers, the counterparty is the seller
             const counterpartyResponse = await getAccountById(tradeData.leg1_seller_account_id);
             setCounterparty(counterpartyResponse.data);
-
-            // Determine user role (this would normally come from auth context)
-            // For now, we'll just use a placeholder logic
-            const currentUserId = offerResponse.data.creator_account_id; // This should come from auth context
-            setUserRole(tradeData.leg1_seller_account_id === currentUserId ? 'seller' : 'buyer');
-
           } else if (offerResponse.data.offer_type === "SELL" && tradeData.leg1_buyer_account_id) {
             // For SELL offers, the counterparty is the buyer
             const counterpartyResponse = await getAccountById(tradeData.leg1_buyer_account_id);
             setCounterparty(counterpartyResponse.data);
-
-            // Determine user role
-            const currentUserId = offerResponse.data.creator_account_id; // This should come from auth context
-            setUserRole(tradeData.leg1_buyer_account_id === currentUserId ? 'buyer' : 'seller');
           }
+
+          // Get current user account and determine role
+          const accountResponse = await getAccount();
+          const userAccount = accountResponse.data;
+          setCurrentAccount(userAccount);
+
+          // Determine user role using our helper function
+          const role = await getUserRoleInTrade(tradeData);
+          setUserRole(role);
+          console.log(`User role determined: ${role}`);
+          console.log(`Trade state: ${tradeData.leg1_state}`);
         }
 
         setError(null);
@@ -381,6 +434,13 @@ function TradePage() {
 
   return (
     <div className="space-y-4">
+      {/* User Role Display */}
+      <div className="bg-purple-100 p-3 rounded-md mb-4 text-center">
+        <p className="text-purple-800 font-medium">
+          Your role in this trade: <span className="font-bold uppercase">{userRole}</span>
+        </p>
+      </div>
+
       {/* Combined Title and Trade Description */}
       <Card className="border border-gray-200 shadow-sm p-4">
         <CardHeader>
@@ -404,7 +464,6 @@ function TradePage() {
               trade={trade}
               offer={offer}
               userRole={userRole}
-              creator={creator}
               counterparty={counterparty}
             />
           )}
