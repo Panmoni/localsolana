@@ -78,7 +78,9 @@ LocalSolana is a modular ecosystem of interconnected repositories working togeth
 Join us to shape the future of decentralized trading and remittances:
 
 - Telegram: Connect with the community in [English](https://t.me/Panmoni/802) or [Español](https://t.me/Panmoni/804).
+- Waitlist: https://getwaitlist.com/waitlist/19781
 - X: Follow updates. https://x.com/localsolana
+- Website: https://LocalSolana.com
 
 ## License
 MIT - See LICENSE for details.
