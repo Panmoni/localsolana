@@ -14,7 +14,7 @@ import {
   Offer,
   Account
 } from "./api";
-import { useUserRole } from "./hooks/useUserRole";
+import { useTradeParticipants } from "./hooks/useTradeParticipants";
 import { formatNumber } from "./lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,9 +43,9 @@ function TradeDescription({ trade, offer, userRole, counterparty }: TradeDescrip
     if (rate < 1) return `-${((1 - rate) * 100).toFixed(2)}%`;
     return "0%";
   };
-  // The other party is the counterparty
+  // The other party is the counterparty with a more descriptive role
   const otherParty = counterparty;
-  const otherPartyRole = "Counterparty";
+  const otherPartyRole = userRole === 'buyer' ? "Seller" : "Buyer";
 
   // Abbreviate wallet address if available
   const abbreviateWallet = (wallet: string) => {
@@ -140,13 +140,12 @@ function TradePage() {
   const [trade, setTrade] = useState<Trade | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [creator, setCreator] = useState<Account | null>(null);
-  const [counterparty, setCounterparty] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Use our custom hook to determine user role
-  const { userRole } = useUserRole(trade);
+  // Use our custom hook to determine user role and counterparty
+  const { userRole, counterparty } = useTradeParticipants(trade);
 
 
   // Use polling to get trade updates
@@ -311,17 +310,7 @@ function TradePage() {
           const creatorResponse = await getAccountById(offerResponse.data.creator_account_id);
           setCreator(creatorResponse.data);
 
-          // Fetch counterparty account (the other party in the trade)
-          // Determine counterparty based on offer type
-          if (offerResponse.data.offer_type === "BUY") {
-            // For BUY offers, the counterparty is the seller
-            const counterpartyResponse = await getAccountById(tradeData.leg1_seller_account_id);
-            setCounterparty(counterpartyResponse.data);
-          } else if (offerResponse.data.offer_type === "SELL" && tradeData.leg1_buyer_account_id) {
-            // For SELL offers, the counterparty is the buyer
-            const counterpartyResponse = await getAccountById(tradeData.leg1_buyer_account_id);
-            setCounterparty(counterpartyResponse.data);
-          }
+          // No need to manually determine counterparty - the useTradeParticipants hook handles this
 
           // No need to manually determine user role - the useUserRole hook handles this
           console.log(`Trade state: ${tradeData.leg1_state}`);
