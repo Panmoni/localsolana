@@ -82,12 +82,21 @@ const TradeStatusDisplay: React.FC<TradeStatusDisplayProps> = ({
 
   // Determine which actions are available based on state, role, and time conditions
   const getAvailableActions = (): TradeAction[] => {
+    console.log('Evaluating available actions for:', {
+      state: trade.leg1_state,
+      userRole,
+      escrowDeadlineExpired,
+      fiatPaymentDeadlineExpired
+    });
+
     switch (trade.leg1_state) {
       case 'CREATED':
-        // If seller and escrow deadline expired, allow cancellation
+        console.log('Trade is in CREATED state');
         if (userRole === 'seller') {
+          console.log('User is seller, escrow deadline expired:', escrowDeadlineExpired);
           return escrowDeadlineExpired ? ['cancel'] : ['create_escrow'];
         }
+        console.log('User is buyer, no actions available');
         return [];
 
       case 'AWAITING_FIAT_PAYMENT':
