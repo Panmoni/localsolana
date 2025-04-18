@@ -51,7 +51,7 @@ LocalSolana is a modular ecosystem of interconnected repositories working togeth
    - **Functionality**: Displays trade offers, manages user interactions, integrates with Solana wallets and communicates with the API and pricing server.
    - **Connection**: Connects to the API for source-of-truth data and the contracts for on-chain actions, while querying the pricing server (via the API) for real-time fiat prices.
 
-4. **[localsolana-pricing](https://github.com/Panmoni/localsolana-pricing)**
+4. **[pricing](https://github.com/Panmoni/pricing)**
    - **Role**: Lightweight Express.js server for cryptocurrency price feeds.
    - **Functionality**: Provides real-time USDC prices in multiple fiat currencies (USD, EUR, COP, NGN, VES) using Coinranking API, cached with Redis.
    - **Connection**: The API queries this server’s `/prices` endpoint to display accurate fiat equivalents for trades. The frontend then talks to the API server to get the prices.
